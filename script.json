@@ -1,0 +1,14 @@
+{
+    "day1": {
+        "script": ["day1Sentence1", "day1Sentence2", "day1Sentence3"]
+    },
+    "day2": {
+        "script": ["day2Sentence1", "day2Sentence2", "day2Sentence3"]
+    },
+    "day3": {
+        "script": ["day3Sentence1", "day3Sentence2", "day3Sentence3"]
+    },
+    "day4": {
+        "script": ["day4Sentence1", "day4Sentence2", "day4Sentence3"]
+    }
+}
