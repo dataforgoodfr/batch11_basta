@@ -7,7 +7,10 @@ from discord.ext import commands
 import typing
 
 import os
+import json
 from dotenv import load_dotenv
+
+from dayManager import DayManager
 
 load_dotenv()
 
@@ -65,4 +68,28 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-bot.run(BOT_TOKEN)
+def getJSON(filename):
+    # Python program to read
+    with open(filename) as json_data_file:
+        data = json.load(json_data_file)
+    return data
+
+
+def getConfiguration():
+    conf = getJSON("./configuration.json")
+
+    return {
+        "OPENING_CHANNEL_HOUR_CRON": f"0 {conf['OPENING_CHANNEL_HOUR']} * * 1-5",
+        "CLOSING_CHANNEL_HOUR_CRON": f"0 {conf['CLOSING_CHANNEL_HOUR']} * * 1-5",
+        "MESSAGE_CRON": f"0 {conf['FIRST_MESSAGE_HOUR']},{conf['SECOND_MESSAGE_HOUR']},{conf['THIRD_MESSAGE_HOUR']} * * *",
+    }
+
+
+if __name__ == "__main__":
+    chatScript = getJSON("./script.json")
+    conf = getConfiguration()
+
+    # Create a day manager
+    dayManager = DayManager(conf, bot, chatScript)
+    
+    bot.run(BOT_TOKEN)
