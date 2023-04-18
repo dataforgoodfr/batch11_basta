@@ -1,17 +1,18 @@
 import discord
 
-# Bot command framework is specially designed for to create bots
-# Doc : https://discordpy.readthedocs.io/en/stable/ext/commands/
+# Bot class is specially designed for to create bots so we use it instead of the Client class
+# https://stackoverflow.com/questions/51234778/what-are-the-differences-between-bot-and-client
+
+# We also choose to use the commands and tasks in order to run recurrent tasks
+# https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html
+# https://discordpy.readthedocs.io/en/latest/ext/tasks/index.html
+
+# Finally, we're using extensions and Cogs as intented by discord.py
+# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 from discord.ext import commands
 
-import typing
-
 import os
-import json
 from dotenv import load_dotenv
-
-from dayManager import DayManager
-
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -23,20 +24,13 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=".", intents=intents)
 
 
-class test_command_flags(commands.FlagConverter):
-    sentence: typing.Optional[str] = commands.flag(
-        description="Insert here the bot response."
-    )
 
-
-@bot.hybrid_command(
-    name="testopt", description="Test command with an optional argument"
-)
-async def testOpt(ctx, *, flags: test_command_flags):
-    if flags.sentence:
-        await ctx.reply(flags.sentence)
-
-    await ctx.send(f"Test done !")
+# be careful to load the extensions BEFORE running the bot
+extensions = ("extensions.dayManager",)
+@bot.event
+async def setup_hook() -> None:
+    for extension in extensions:
+        await bot.load_extension(extension)
 
 
 @bot.command(name="sync", description="Owner only")
@@ -50,46 +44,5 @@ async def sync(ctx):
         await ctx.reply(f"You're not Augustin, your id is {ctx.author.id}")
 
 
-@bot.event
-async def on_ready():
-    print(f"We have logged in as {bot.user}")
-
-
-@bot.event
-async def on_message(message):
-    print(
-        f"{message.channel}: {message.author}: {message.author.name}: {message.content}"
-    )
-
-    if message.author == bot.user:  # Won't track its own messages
-        return
-
-    # Extremely important to call this. Otherwise, the bot will not respond to commands because no processing is done on the message.
-    await bot.process_commands(message)
-
-
-def getJSON(filename):
-    # Python program to read
-    with open(filename) as json_data_file:
-        data = json.load(json_data_file)
-    return data
-
-
-def getConfiguration():
-    conf = getJSON("./configuration.json")
-
-    return {
-        "OPENING_CHANNEL_HOUR_CRON": f"0 {conf['OPENING_CHANNEL_HOUR']} * * 1-5",
-        "CLOSING_CHANNEL_HOUR_CRON": f"0 {conf['CLOSING_CHANNEL_HOUR']} * * 1-5",
-        "MESSAGE_CRON": f"0 {conf['FIRST_MESSAGE_HOUR']},{conf['SECOND_MESSAGE_HOUR']},{conf['THIRD_MESSAGE_HOUR']} * * *",
-    }
-
-
-if __name__ == "__main__":
-    chatScript = getJSON("./script.json")
-    conf = getConfiguration()
-
-    # Create a day manager
-    dayManager = DayManager(conf, bot, chatScript)
-    
-    bot.run(BOT_TOKEN)
+# Always better if run at the end
+bot.run(BOT_TOKEN)
