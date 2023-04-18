@@ -1,6 +1,3 @@
-import aiocron
-import asyncio
-
 from discord.ext import commands, tasks
 
 import json, datetime
