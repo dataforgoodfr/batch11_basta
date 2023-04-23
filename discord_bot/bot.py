@@ -1,37 +1,48 @@
-# This example requires the 'message_content' intent.
-
 import discord
+
+# Bot class is specially designed for to create bots so we use it instead of the Client class
+# https://stackoverflow.com/questions/51234778/what-are-the-differences-between-bot-and-client
+
+# We also choose to use the commands and tasks in order to run recurrent tasks
+# https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html
+# https://discordpy.readthedocs.io/en/latest/ext/tasks/index.html
+
+# Finally, we're using extensions and Cogs as intented by discord.py
+# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
+from discord.ext import commands
 
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 intents = discord.Intents.default()
+# Required to read users messages
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix=".", intents=intents)
 
 
-@client.event
-async def on_ready():
-    print(f"We have logged in as {client.user}")
+
+# be careful to load the extensions BEFORE running the bot
+extensions = ("extensions.dayManager",)
+@bot.event
+async def setup_hook() -> None:
+    for extension in extensions:
+        await bot.load_extension(extension)
 
 
-@client.event
-async def on_message(message):
-    print(
-        f"{message.channel}: {message.author}: {message.author.name}: {message.content}"
-    )
-
-    if message.author == client.user:  # Won't track its own messages
-        return
-
-    if message.content.lower().startswith("hello"):
-        await message.channel.send("Hello!")
+@bot.command(name="sync", description="Owner only")
+async def sync(ctx):
+    # Later replace by checking if user is admin
+    if ctx.author.id == 198894978737373184:
+        # Syncing
+        await ctx.bot.tree.sync()
+        await ctx.reply("Syncing done !")
+    else:
+        await ctx.reply(f"You're not Augustin, your id is {ctx.author.id}")
 
 
-if BOT_TOKEN:
-    client.run(BOT_TOKEN)
+# Always better if run at the end
+bot.run(BOT_TOKEN)
