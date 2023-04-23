@@ -1,51 +1,49 @@
 from discord.ext import commands, tasks
 
-import json, datetime
+from json import load
+from datetime import timezone, time
 
+from dataclasses import dataclass
+
+__all__ = ["DayManager"]
 
 with open("./configuration.json") as json_data_file:
-    raw_conf = json.load(json_data_file)
+    raw_conf = load(json_data_file)
 
-utc = datetime.timezone.utc
+utc = timezone.utc
 
-OPENING_CHANNEL_HOUR_TIMES = [
-    datetime.time(hour=raw_conf["OPENING_CHANNEL_HOUR"], tzinfo=utc)
-]
+OPENING_CHANNEL_HOUR_TIMES = [time(hour=raw_conf["OPENING_CHANNEL_HOUR"], tzinfo=utc)]
 
-CLOSING_CHANNEL_HOUR_TIMES = [
-    datetime.time(hour=raw_conf["CLOSING_CHANNEL_HOUR"], tzinfo=utc)
-]
+CLOSING_CHANNEL_HOUR_TIMES = [time(hour=raw_conf["CLOSING_CHANNEL_HOUR"], tzinfo=utc)]
 
 MESSAGE_HOUR_TIMES = [
-    datetime.time(hour=raw_conf["FIRST_MESSAGE_HOUR"], tzinfo=utc),
-    datetime.time(hour=raw_conf["SECOND_MESSAGE_HOUR"], tzinfo=utc),
-    datetime.time(hour=raw_conf["THIRD_MESSAGE_HOUR"], tzinfo=utc),
+    time(hour=raw_conf["FIRST_MESSAGE_HOUR"], tzinfo=utc),
+    time(hour=raw_conf["SECOND_MESSAGE_HOUR"], tzinfo=utc),
+    time(hour=raw_conf["THIRD_MESSAGE_HOUR"], tzinfo=utc),
 ]
 
 with open("./script.json") as json_data_file:
-    chatScript = json.load(json_data_file)
+    chat_script = load(json_data_file)
 
 
+@dataclass
 class DayManager(commands.Cog):
-    def __init__(self, bot) -> None:
-        self.bot = bot
+    bot: commands.Bot
 
     @commands.Cog.listener()
     async def on_message(self, message) -> None:
         # ATTENTION, il recoit ses propres messages
         print("received message", message.content)
 
-
-
     @commands.hybrid_command(name="startbot", description="Start the bot")
-    async def startBotCommand(self, ctx):
+    async def start_bot_command(self, ctx):
         await ctx.send("Starting the bot...")
-        self.startDayJob.start()
-        self.stopDayJob.start()
+        self.start_day_job.start()
+        self.stop_day_job.start()
 
-        self.dayNb = 1
-        self.dayScript = chatScript["day" + str(self.dayNb)]["script"]
-        self.messageNb = 0
+        self.day_nb = 1
+        self.day_script = chat_script["day" + str(self.day_nb)]["script"]
+        self.message_nb = 0
 
         self.ctx = ctx
 
@@ -53,8 +51,8 @@ class DayManager(commands.Cog):
     @commands.hybrid_command(name="stopbot", description="Stop the bot")
     async def stopBotCommand(self, ctx):
         await ctx.send("Stopping the bot...")
-        self.startDayJob.stop()
-        self.stopDayJob.stop()
+        self.start_day_job.stop()
+        self.stop_day_job.stop()
 
     # Gather the messages
 
@@ -64,28 +62,28 @@ class DayManager(commands.Cog):
         await self.sendMessage()
 
     @tasks.loop(time=OPENING_CHANNEL_HOUR_TIMES)
-    async def startDayJob(self):
-        self.dayNb += 1
-        self.messagesJob.start()
+    async def start_day_job(self):
+        self.day_nb += 1
+        self.messages_job.start()
 
     @tasks.loop(time=CLOSING_CHANNEL_HOUR_TIMES)
-    async def stopDayJob(self):
-        self.messagesJob.stop()
+    async def stop_day_job(self):
+        self.messages_job.stop()
 
     @tasks.loop(time=MESSAGE_HOUR_TIMES)
-    async def messagesJob(self):
+    async def messages_job(self):
         # Send messages
         await sendMessage()
 
     async def sendMessage(self):
         # Looping
-        if self.messageNb >= len(self.dayScript):
-            self.messageNb = 0
+        if self.message_nb >= len(self.day_script):
+            self.message_nb = 0
 
         # Get a message from the script
-        await self.ctx.send(self.dayScript[self.messageNb])
+        await self.ctx.send(self.day_script[self.message_nb])
 
-        self.messageNb += 1
+        self.message_nb += 1
 
 
 # Adding the cog to the bot. It is required to do this in order to use the commands
