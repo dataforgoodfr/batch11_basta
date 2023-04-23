@@ -1,2 +1,9 @@
-README.md
- C'est le nouveau README
+# Basta
+
+## Installation
+
+```bash
+
+pip install -r requirements.txt
+
+```
