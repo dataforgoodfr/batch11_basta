@@ -13,6 +13,7 @@ from discord.ext import commands
 
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -24,9 +25,13 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=".", intents=intents)
 
 
-
 # be careful to load the extensions BEFORE running the bot
-extensions = ("extensions.dayManager",)
+extensions = (
+    "extensions.dayManager",
+    "extensions.conclusionGenerator",
+)
+
+
 @bot.event
 async def setup_hook() -> None:
     for extension in extensions:
