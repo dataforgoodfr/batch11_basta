@@ -14,6 +14,9 @@ from discord.ext import commands
 import os
 from dotenv import load_dotenv
 
+
+from helper.logger import setupLogger
+
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -31,6 +34,10 @@ extensions = (
     "extensions.conclusionGenerator",
 )
 
+# Setup Logging
+# We don't use the built-in logging system of discord.py
+# because we want to have a custom logger that logs into a file and the stream
+setupLogger()
 
 @bot.event
 async def setup_hook() -> None:
@@ -49,5 +56,8 @@ async def sync(ctx):
         await ctx.reply(f"You're not Augustin, your id is {ctx.author.id}")
 
 
+
+
 # Always better if run at the end
-bot.run(BOT_TOKEN)
+# root_logger=True allow to run the python logger, not the one from discord.py
+bot.run(BOT_TOKEN, root_logger=True)
