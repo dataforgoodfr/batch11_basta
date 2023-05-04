@@ -17,14 +17,14 @@ load_dotenv()
 utc = timezone.utc
 
 
-with open("scripts/common_messages.json") as json_data_file:
+with open("scripts/common_messages.json", encoding="utf-8") as json_data_file:
     COMMON_MESSAGES = load(json_data_file)
+print(COMMON_MESSAGES)
 
-
-with open("configuration.json") as json_data_file:
+with open("configuration.json", encoding="utf-8") as json_data_file:
     RAW_CONFIGURATION = load(json_data_file)
 
-with open("scripts/discuss_script.json") as json_data_file:
+with open("scripts/discuss_script.json", encoding="utf-8") as json_data_file:
     CHAT_SCRIPT = load(json_data_file)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")

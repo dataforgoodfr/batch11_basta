@@ -10,7 +10,7 @@ class Tools(commands.Cog):
 
     global_ctx = None
 
-    async def send_message(self, message, ctx):
+    async def send_message(self, message, ctx = None):
         ctx = ctx or self.global_ctx
         await ctx.send(message)
 

@@ -14,7 +14,7 @@ class DayManager(commands.Cog):
     bot: commands.Bot
 
     def __post_init__(self):
-        self.tools = self.bot.get_cog("tools")
+        self.tools = self.bot.get_cog("Tools")
 
     """
     This class is used to manage the bot behaviour during the days.
@@ -74,7 +74,8 @@ class DayManager(commands.Cog):
         self.day_script = dataImport.CHAT_SCRIPT["day" + str(self.day_nb)]["script"]
         self.message_nb = 0
 
-        self.tools.set_global_ctx(ctx)
+        self.tools = self.bot.get_cog("Tools")
+        await self.tools.set_global_ctx(ctx)
 
         self.make_daily_conclusion_flag = flags.make_daily_conclusion_flag
         self.make_final_conclusion_flag = flags.make_final_conclusion_flag
@@ -95,7 +96,7 @@ class DayManager(commands.Cog):
         self.stop_day_job.stop()
 
         if flags.make_daily_conclusion_flag:
-            await self.make_daily_conclusion(self.day_nb)
+            await self.make_daily_conclusion()
 
         if flags.make_final_conclusion_flag:
             await self.make_final_conclusion()
@@ -146,7 +147,7 @@ class DayManager(commands.Cog):
             self.message_nb = 0
 
         # Get a message from the script
-        ctx = self.tools.get_global_ctx()
+        ctx = await self.tools.get_global_ctx()
         await ctx.send(self.day_script[self.message_nb])
 
         self.message_nb += 1
