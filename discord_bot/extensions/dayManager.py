@@ -8,9 +8,13 @@ import typing
 
 __all__ = ["DayManager"]
 
+
 @dataclass
 class DayManager(commands.Cog):
     bot: commands.Bot
+
+    def __post_init__(self):
+        self.tools = self.bot.get_cog("tools")
 
     """
     This class is used to manage the bot behaviour during the days.
@@ -70,7 +74,7 @@ class DayManager(commands.Cog):
         self.day_script = dataImport.CHAT_SCRIPT["day" + str(self.day_nb)]["script"]
         self.message_nb = 0
 
-        self.ctx = ctx
+        self.tools.set_global_ctx(ctx)
 
         self.make_daily_conclusion_flag = flags.make_daily_conclusion_flag
         self.make_final_conclusion_flag = flags.make_final_conclusion_flag
@@ -100,7 +104,9 @@ class DayManager(commands.Cog):
     async def start_day(self, ctx):
         await self.start_day_job()
 
-    @tasks.loop(time=dataImport.OPENING_CHANNEL_HOUR_TIMES, count=dataImport.SCRIPT_DAY_LENGTH)
+    @tasks.loop(
+        time=dataImport.OPENING_CHANNEL_HOUR_TIMES, count=dataImport.SCRIPT_DAY_LENGTH
+    )
     async def start_day_job(self):
         self.day_nb += 1
         self.messages_job.start()
@@ -140,7 +146,8 @@ class DayManager(commands.Cog):
             self.message_nb = 0
 
         # Get a message from the script
-        await self.ctx.send(self.day_script[self.message_nb])
+        ctx = self.tools.get_global_ctx()
+        await ctx.send(self.day_script[self.message_nb])
 
         self.message_nb += 1
 
@@ -148,7 +155,9 @@ class DayManager(commands.Cog):
         # If the extensions named "conclusionGenerator" is loaded
         if "extensions.conclusionGenerator" in self.bot.extensions:
             # Make the conclusion
-            await self.bot.get_cog("ConclusionGenerator").make_daily_conclusion(self.day_nb)
+            await self.bot.get_cog("ConclusionGenerator").make_daily_conclusion(
+                self.day_nb
+            )
         else:
             print("ConclusionGenerator is not loaded")
 

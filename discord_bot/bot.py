@@ -24,6 +24,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 extensions = (
     "extensions.dayManager",
     "extensions.conclusionGenerator",
+    "extensions.tools"
 )
 
 
