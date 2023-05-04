@@ -1,34 +1,12 @@
 from discord.ext import commands, tasks
 
-from json import load
-from datetime import timezone, time
+import helpers.constantsImport as dataImport
 
 from dataclasses import dataclass
 
 import typing
 
 __all__ = ["DayManager"]
-
-with open("./configuration.json") as json_data_file:
-    raw_conf = load(json_data_file)
-
-utc = timezone.utc
-
-OPENING_CHANNEL_HOUR_TIMES = [time(hour=raw_conf["OPENING_CHANNEL_HOUR"], tzinfo=utc)]
-
-CLOSING_CHANNEL_HOUR_TIMES = [time(hour=raw_conf["CLOSING_CHANNEL_HOUR"], tzinfo=utc)]
-
-MESSAGE_HOUR_TIMES = [
-    time(hour=raw_conf["FIRST_MESSAGE_HOUR"], tzinfo=utc),
-    time(hour=raw_conf["SECOND_MESSAGE_HOUR"], tzinfo=utc),
-    time(hour=raw_conf["THIRD_MESSAGE_HOUR"], tzinfo=utc),
-]
-
-SCRIPT_DAY_LENGTH = int(raw_conf["SCRIPT_DAY_LENGTH"])
-
-with open("./script.json") as json_data_file:
-    chat_script = load(json_data_file)
-
 
 @dataclass
 class DayManager(commands.Cog):
@@ -89,7 +67,7 @@ class DayManager(commands.Cog):
         self.stop_day_job.start()
 
         self.day_nb = 1
-        self.day_script = chat_script["day" + str(self.day_nb)]["script"]
+        self.day_script = dataImport.CHAT_SCRIPT["day" + str(self.day_nb)]["script"]
         self.message_nb = 0
 
         self.ctx = ctx
@@ -113,7 +91,7 @@ class DayManager(commands.Cog):
         self.stop_day_job.stop()
 
         if flags.make_daily_conclusion_flag:
-            await self.make_daily_conclusion()
+            await self.make_daily_conclusion(self.day_nb)
 
         if flags.make_final_conclusion_flag:
             await self.make_final_conclusion()
@@ -122,7 +100,7 @@ class DayManager(commands.Cog):
     async def start_day(self, ctx):
         await self.start_day_job()
 
-    @tasks.loop(time=OPENING_CHANNEL_HOUR_TIMES, count=SCRIPT_DAY_LENGTH)
+    @tasks.loop(time=dataImport.OPENING_CHANNEL_HOUR_TIMES, count=dataImport.SCRIPT_DAY_LENGTH)
     async def start_day_job(self):
         self.day_nb += 1
         self.messages_job.start()
@@ -131,27 +109,27 @@ class DayManager(commands.Cog):
     async def stop_day(self, ctx):
         await self.stop_day_job()
 
-    @tasks.loop(time=CLOSING_CHANNEL_HOUR_TIMES)
+    @tasks.loop(time=dataImport.CLOSING_CHANNEL_HOUR_TIMES)
     async def stop_day_job(self):
         self.messages_job.stop()
 
     @stop_day_job.after_loop  # After a day was finished
     async def after_stop_day_job(self):
         # If it is the last day
-        if self.day_nb == SCRIPT_DAY_LENGTH:
+        if self.day_nb == dataImport.SCRIPT_DAY_LENGTH:
             # Make the final conclusion
             if self.make_final_conclusion_flag:
                 await self.make_final_conclusion()
         else:
             # Make the daily conclusion
             if self.make_daily_conclusion_flag:
-                await self.make_daily_conclusion()
+                await self.make_daily_conclusion(day_nb)
 
     @commands.hybrid_command(name="nextmessage", description="Send the next message")
     async def send_message_command(self, ctx):
         await self.send_message()
 
-    @tasks.loop(time=MESSAGE_HOUR_TIMES)
+    @tasks.loop(time=dataImport.MESSAGE_HOUR_TIMES)
     async def messages_job(self):
         # Send messages
         await send_message()
@@ -170,7 +148,7 @@ class DayManager(commands.Cog):
         # If the extensions named "conclusionGenerator" is loaded
         if "extensions.conclusionGenerator" in self.bot.extensions:
             # Make the conclusion
-            await self.bot.get_cog("ConclusionGenerator").make_daily_conclusion()
+            await self.bot.get_cog("ConclusionGenerator").make_daily_conclusion(self.day_nb)
         else:
             print("ConclusionGenerator is not loaded")
 

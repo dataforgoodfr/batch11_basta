@@ -11,12 +11,7 @@ import discord
 # https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 from discord.ext import commands
 
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+import helpers.constantsImport as dataImport
 
 intents = discord.Intents.default()
 # Required to read users messages
@@ -50,4 +45,4 @@ async def sync(ctx):
 
 
 # Always better if run at the end
-bot.run(BOT_TOKEN)
+bot.run(dataImport.BOT_TOKEN)
