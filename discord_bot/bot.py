@@ -15,6 +15,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+from helper.logger import setupLogger
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 intents = discord.Intents.default()
@@ -27,6 +29,13 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 
 # be careful to load the extensions BEFORE running the bot
 extensions = ("extensions.dayManager",)
+
+# Setup Logging
+# We don't use the built-in logging system of discord.py
+# because we want to have a custom logger that logs into a file and the stream
+setupLogger()
+
+
 @bot.event
 async def setup_hook() -> None:
     for extension in extensions:
@@ -45,4 +54,5 @@ async def sync(ctx):
 
 
 # Always better if run at the end
-bot.run(BOT_TOKEN)
+# root_logger=True allow to run the python logger, not the one from discord.py
+bot.run(BOT_TOKEN, root_logger=True)
