@@ -1,16 +1,18 @@
 import os
-from dotenv import load_dotenv
+from datetime import time, timezone
 from json import load
-from datetime import timezone, time
 
-__all__ = ["COMMON_MESSAGES",
-"BOT_TOKEN",
-"RAW_CONFIGURATION",
-"CHAT_SCRIPT",
-"OPENING_CHANNEL_HOUR_TIMES",
-"CLOSING_CHANNEL_HOUR_TIMES",
-"MESSAGE_HOUR_TIMES",
-"SCRIPT_DAY_LENGTH"
+from dotenv import load_dotenv
+
+__all__ = [
+    "COMMON_MESSAGES",
+    "BOT_TOKEN",
+    "RAW_CONFIGURATION",
+    "CHAT_SCRIPT",
+    "OPENING_CHANNEL_HOUR_TIMES",
+    "CLOSING_CHANNEL_HOUR_TIMES",
+    "MESSAGE_HOUR_TIMES",
+    "SCRIPT_DAY_LENGTH",
 ]
 
 load_dotenv()
@@ -29,9 +31,13 @@ with open("scripts/discuss_script.json", encoding="utf-8") as json_data_file:
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-OPENING_CHANNEL_HOUR_TIMES = [time(hour=RAW_CONFIGURATION["OPENING_CHANNEL_HOUR"], tzinfo=utc)]
+OPENING_CHANNEL_HOUR_TIMES = [
+    time(hour=RAW_CONFIGURATION["OPENING_CHANNEL_HOUR"], tzinfo=utc)
+]
 
-CLOSING_CHANNEL_HOUR_TIMES = [time(hour=RAW_CONFIGURATION["CLOSING_CHANNEL_HOUR"], tzinfo=utc)]
+CLOSING_CHANNEL_HOUR_TIMES = [
+    time(hour=RAW_CONFIGURATION["CLOSING_CHANNEL_HOUR"], tzinfo=utc)
+]
 
 MESSAGE_HOUR_TIMES = [
     time(hour=RAW_CONFIGURATION["FIRST_MESSAGE_HOUR"], tzinfo=utc),
@@ -40,4 +46,3 @@ MESSAGE_HOUR_TIMES = [
 ]
 
 SCRIPT_DAY_LENGTH = int(RAW_CONFIGURATION["SCRIPT_DAY_LENGTH"])
-

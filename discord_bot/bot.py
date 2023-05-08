@@ -1,17 +1,17 @@
 import discord
+import helpers.constantsImport as dataImport
 
-# Bot class is specially designed for to create bots so we use it instead of the Client class
+# Finally, we're using extensions and Cogs as intented by discord.py
+# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
+from discord.ext import commands
+
+# Bot class is specially designed to create bots,used instead of the Client cls
 # https://stackoverflow.com/questions/51234778/what-are-the-differences-between-bot-and-client
 
 # We also choose to use the commands and tasks in order to run recurrent tasks
 # https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html
 # https://discordpy.readthedocs.io/en/latest/ext/tasks/index.html
 
-# Finally, we're using extensions and Cogs as intented by discord.py
-# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
-from discord.ext import commands
-
-import helpers.constantsImport as dataImport
 
 intents = discord.Intents.default()
 # Required to read users messages

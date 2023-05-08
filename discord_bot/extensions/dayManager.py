@@ -1,10 +1,8 @@
-from discord.ext import commands, tasks
-
-import helpers.constantsImport as dataImport
-
+import typing
 from dataclasses import dataclass
 
-import typing
+import helpers.constantsImport as dataImport
+from discord.ext import commands, tasks
 
 __all__ = ["DayManager"]
 
@@ -25,7 +23,6 @@ class DayManager(commands.Cog):
     It is supposed to be stopped with the appropriate stopbot command.
 
     The bot configuration is stored in the configuration.json file.
-    TODO : move the condiguration file in the same directory as the dayManager file to make specific configuration for each functionnality (does it make sense ?)
 
     The script is stored in the script.json file. This file should be left where it is because it is part of the main bot configuration.
 
@@ -49,12 +46,11 @@ class DayManager(commands.Cog):
             after_stop_day_job : Occurs after the execution of the stop_day_job coroutine.
                 If is was the final day and the appropriate flag was set, it will generate the final conclusion, else if the appropriate flag was set, it will generate the daily conclusion
             messages_job : Coroutine to send the messages at the appropriate time (in the configuration file). Started and stopped by the start_day_job and stop_day_job coroutines respectively
-        
         Methods :
             send_message : Sends the next message in the script
             make_daily_conclusion : Generates the daily conclusion
             make_final_conclusion : Generates the final conclusion
-    """
+    """  # noqa: E501
 
     class startbot_command_flags(commands.FlagConverter):
         make_daily_conclusion_flag: typing.Optional[bool] = commands.flag(
@@ -71,7 +67,9 @@ class DayManager(commands.Cog):
         self.stop_day_job.start()
 
         self.day_nb = 1
-        self.day_script = dataImport.CHAT_SCRIPT["day" + str(self.day_nb)]["script"]
+        self.day_script = dataImport.CHAT_SCRIPT["day" + str(self.day_nb)][
+            "script"
+        ]
         self.message_nb = 0
 
         self.tools = self.bot.get_cog("Tools")
@@ -106,7 +104,8 @@ class DayManager(commands.Cog):
         await self.start_day_job()
 
     @tasks.loop(
-        time=dataImport.OPENING_CHANNEL_HOUR_TIMES, count=dataImport.SCRIPT_DAY_LENGTH
+        time=dataImport.OPENING_CHANNEL_HOUR_TIMES,
+        count=dataImport.SCRIPT_DAY_LENGTH,
     )
     async def start_day_job(self):
         self.day_nb += 1
@@ -130,16 +129,18 @@ class DayManager(commands.Cog):
         else:
             # Make the daily conclusion
             if self.make_daily_conclusion_flag:
-                await self.make_daily_conclusion(day_nb)
+                await self.make_daily_conclusion(self.day_nb)
 
-    @commands.hybrid_command(name="nextmessage", description="Send the next message")
+    @commands.hybrid_command(
+        name="nextmessage", description="Send the next message"
+    )
     async def send_message_command(self, ctx):
         await self.send_message()
 
     @tasks.loop(time=dataImport.MESSAGE_HOUR_TIMES)
     async def messages_job(self):
         # Send messages
-        await send_message()
+        await self.send_message()
 
     async def send_message(self):
         # Looping
@@ -156,9 +157,9 @@ class DayManager(commands.Cog):
         # If the extensions named "conclusionGenerator" is loaded
         if "extensions.conclusionGenerator" in self.bot.extensions:
             # Make the conclusion
-            await self.bot.get_cog("ConclusionGenerator").make_daily_conclusion(
-                self.day_nb
-            )
+            await self.bot.get_cog(
+                "ConclusionGenerator"
+            ).make_daily_conclusion(self.day_nb)
         else:
             print("ConclusionGenerator is not loaded")
 
@@ -166,11 +167,14 @@ class DayManager(commands.Cog):
         # If the extensions named "conclusionGenerator" is loaded
         if "extensions.conclusionGenerator" in self.bot.extensions:
             # Make the conclusion
-            await self.bot.get_cog("ConclusionGenerator").make_final_conclusion()
+            await self.bot.get_cog(
+                "ConclusionGenerator"
+            ).make_final_conclusion()
         else:
             print("ConclusionGenerator is not loaded")
 
 
-# Adding the cog to the bot. It is required to do this in order to use the commands
+# Adding the cog to the bot
+# Required to do this in order to use the commands
 async def setup(bot) -> None:
     await bot.add_cog(DayManager(bot))

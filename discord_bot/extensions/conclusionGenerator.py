@@ -1,14 +1,11 @@
-from discord.ext import commands
-from discord import Message
-
+import logging
 from dataclasses import dataclass, field
 
-import logging
-
 import helpers.constantsImport as dataImport
+from discord import Message
+from discord.ext import commands
 
 __all__ = ["ConclusionGenerator"]
-
 
 
 @dataclass
@@ -18,7 +15,7 @@ class ConclusionGenerator(commands.Cog):
 
     # TODO :
     # - Faire le système qui fait des stats
-    
+
     async def get_tools(self) -> None:
         return self.bot.get_cog("Tools")
 
@@ -31,7 +28,7 @@ class ConclusionGenerator(commands.Cog):
         ):
             self.messages.append(message)
 
-    async def make_daily_conclusion(self, dayNb : int) -> None:
+    async def make_daily_conclusion(self, dayNb: int) -> None:
         logging.debug("Making daily conclusion")
 
         tools = await self.get_tools()
@@ -42,22 +39,24 @@ class ConclusionGenerator(commands.Cog):
         # # Annonce des thèmes de la journée suivante
         # # Rappel des règles et des contacts
 
-        
-        await tools.send_message(dataImport.COMMON_MESSAGES['endDayThanks'])
+        await tools.send_message(dataImport.COMMON_MESSAGES["endDayThanks"])
 
         # Récapitulatif de l'engagement sur la journée
-        phrase = "Le prochain theme est : " + dataImport.CHAT_SCRIPT['day'+str(dayNb)]['theme']
+        phrase = (
+            "Le prochain theme est : "
+            + dataImport.CHAT_SCRIPT["day" + str(dayNb)]["theme"]
+        )
         await tools.send_message(phrase)
 
         # Rappel des règles
-        await tools.send_message(dataImport.COMMON_MESSAGES['reglesRappel'])
-        await tools.send_message(dataImport.COMMON_MESSAGES['contactRappel'])
+        await tools.send_message(dataImport.COMMON_MESSAGES["reglesRappel"])
+        await tools.send_message(dataImport.COMMON_MESSAGES["contactRappel"])
 
     async def make_final_conclusion(self) -> None:
         logging.debug("Making final conclusion")
 
 
-
-# Adding the cog to the bot. It is required to do this in order to use the commands
+# Adding the cog to the bot
+# Required to do this in order to use the commands
 async def setup(bot) -> None:
     await bot.add_cog(ConclusionGenerator(bot))
