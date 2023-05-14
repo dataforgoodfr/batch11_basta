@@ -30,6 +30,9 @@ class privateChannels(commands.Cog):
 
     class PrivateChannelButton(discord.ui.View):
 
+        def __init__(self):
+           super().__init__(timeout=None) # Il est nécessaire d'explicitement définir le timeout à None pour permettre la persistance
+
         # Ce décorateur permet de déclarer la création d'un bouton, et la méthode 'button' est appelée lorsque le bouton est cliqué.
         # /!\ IMPORTANT /!\ - Le champ "custom_id" permet la persistance des boutons. C'est-à-dire que les boutons fonctionneront
         #                     encore après que le bot est redémarré. C'est très important puisque sans cette persistance, il serait
@@ -79,6 +82,7 @@ class privateChannels(commands.Cog):
 
         channel = await interaction.channel.category.create_text_channel("canal privé XXXX", overwrites=overwrites)
         await channel.send(f"Bienvenue {interaction.user.mention}, ici tu peux t'exprimer comme tu l'entends.")
+        await channel.send("Partage :)", view=privateChannels.ShareButtons())
 
     # COMMANDS
 
