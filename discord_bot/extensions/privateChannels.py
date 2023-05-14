@@ -80,6 +80,15 @@ class privateChannels(commands.Cog):
         channel = await interaction.channel.category.create_text_channel("canal privé XXXX", overwrites=overwrites)
         await channel.send(f"Bienvenue {interaction.user.mention}, ici tu peux t'exprimer comme tu l'entends.")
 
+    # COMMANDS
+
+    @commands.hybrid_command()
+    async def generateprivatechannelmessage(self, ctx):
+        embed = privateChannels.embed_privateChannelMessage()
+        view = privateChannels.PrivateChannelButton()
+        await ctx.send(embed=embed, view=view)
+
 
 async def setup(bot) -> None:
     await bot.add_cog(privateChannels(bot))
+    bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
