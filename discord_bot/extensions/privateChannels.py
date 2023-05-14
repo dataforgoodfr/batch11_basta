@@ -23,6 +23,45 @@ class privateChannels(commands.Cog):
         return embed
     
 
+    # VIEWS
+    # Les views permettent de créer des dispositions de 'components' Discord. Dans notre cas, elles sont utiles
+    # pour pouvoir ajouter des boutons aux messages du bot, et rendre les interactions plus pratiques qu'avec des réactions.
+    # Elles permettent aussi de gérer plus facilement les interactions qu'avec des récations.
+
+    class PrivateChannelButton(discord.ui.View):
+
+        # Ce décorateur permet de déclarer la création d'un bouton, et la méthode 'button' est appelée lorsque le bouton est cliqué.
+        # /!\ IMPORTANT /!\ - Le champ "custom_id" permet la persistance des boutons. C'est-à-dire que les boutons fonctionneront
+        #                     encore après que le bot est redémarré. C'est très important puisque sans cette persistance, il serait
+        #                     nécessaire que le bot réécrive son message à chaque lancement pour pouvoir générer des boutons fonctionnels. 
+        @discord.ui.button(label="Créer un canal privé",style=discord.ButtonStyle.primary, custom_id="1")
+        async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await privateChannels.createPrivateChannel(interaction)
+            await interaction.response.defer() # Marque l'interaction comme terminée pour éviter des messages "L'interaction a échoué"
+    
+    class ShareButtons(discord.ui.View):
+
+        # TODO: persistance
+
+        # Cette sous-classe de bouton permettra de créer les boutons "Jour 1, "Jour 2" etc.
+        # On utilise une sous-classe puisque l'on souhaite créer des boutons avec des noms différents mais
+        # avec un comportement similaire.
+        class ShareButton(discord.ui.Button):
+            def __init__(self, label, style):
+                super().__init__(label=label, style=style)
+            
+            async def callback(self, interaction: discord.Interaction):
+                await interaction.response.send_message(f"yes {self.label}") # Temporaire
+
+        # La view crée 5 boutons "Jour 1", "Jour 2" etc. à l'initialisation.
+        def __init__(self):
+            super().__init__()
+            for i in range(5):
+                # Le décorateur utilisée dans la sous-classe PrivateChannelButton crée et ajoute automatiquement
+                # le bouton à la view. Dans notre cas, vu que l'on déclare nous-même les objects ShareButton, il
+                # est nécessaire de les ajouter manuellement à notre view.
+                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary))
+
     # UTILS
     
     async def createPrivateChannel(interaction: discord.Interaction):
