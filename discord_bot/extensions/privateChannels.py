@@ -6,6 +6,7 @@ __all__ = ["privateChannels"]
 
 # CONFIGURATION
 ADMIN_ROLE_ID = 1100893370248876092
+CURRENT_DAY = 3 # Temporaire
 
 @dataclass
 class privateChannels(commands.Cog):
@@ -44,26 +45,29 @@ class privateChannels(commands.Cog):
     
     class ShareButtons(discord.ui.View):
 
-        # TODO: persistance
+        # TODO: persistence
 
         # Cette sous-classe de bouton permettra de créer les boutons "Jour 1, "Jour 2" etc.
         # On utilise une sous-classe puisque l'on souhaite créer des boutons avec des noms différents mais
         # avec un comportement similaire.
         class ShareButton(discord.ui.Button):
-            def __init__(self, label, style):
-                super().__init__(label=label, style=style)
+            def __init__(self, label, style, custom_id, disabled):
+                super().__init__(label=label, style=style, custom_id=custom_id, disabled=disabled)
+                # Le tag 'disabled' permet de désactiver les boutons (ie. de les afficher sans qu'ils soient cliquables).
+                # Les boutons correspondant à des jours non ouverts sont désactivés.
             
             async def callback(self, interaction: discord.Interaction):
                 await interaction.response.send_message(f"yes {self.label}") # Temporaire
+                await interaction.channel.send(f"channel: {interaction.channel.id}")
 
         # La view crée 5 boutons "Jour 1", "Jour 2" etc. à l'initialisation.
         def __init__(self):
-            super().__init__()
+            super().__init__(timeout=None)
             for i in range(5):
                 # Le décorateur utilisée dans la sous-classe PrivateChannelButton crée et ajoute automatiquement
                 # le bouton à la view. Dans notre cas, vu que l'on déclare nous-même les objects ShareButton, il
                 # est nécessaire de les ajouter manuellement à notre view.
-                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary))
+                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i+1 > CURRENT_DAY))) # TODO: handle custom ids
 
     # UTILS
     
@@ -96,3 +100,4 @@ class privateChannels(commands.Cog):
 async def setup(bot) -> None:
     await bot.add_cog(privateChannels(bot))
     bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
+    bot.add_view(privateChannels.ShareButtons()) # Persistance des boutons de partage des jours
