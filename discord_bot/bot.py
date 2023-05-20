@@ -28,7 +28,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 
 
 # be careful to load the extensions BEFORE running the bot
-extensions = ("extensions.dayManager",)
+extensions = ("extensions.forumManager",)
 
 # Setup Logging
 # We don't use the built-in logging system of discord.py
