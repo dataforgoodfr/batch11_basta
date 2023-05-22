@@ -59,7 +59,7 @@ class ForumManager(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.hybrid_command(name="load_configs", description="Génère des objets forums et des fichiers de configuration pour les serveurs qui n'en auraient pas.")
+    @commands.hybrid_command(name="load_forums", description="Génère des objets forums et des fichiers de configuration pour les serveurs qui n'en auraient pas.")
     async def load_configs(self, ctx: commands.Context):
         await self.reload()
         await ctx.send("Done!", delete_after=5)

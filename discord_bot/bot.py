@@ -28,7 +28,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 
 
 # be careful to load the extensions BEFORE running the bot
-extensions = ("extensions.forumManager",)
+extensions = ("extensions.forumManager", "extensions.testManager",)
 
 # Setup Logging
 # We don't use the built-in logging system of discord.py
@@ -45,7 +45,7 @@ async def setup_hook() -> None:
 @bot.command(name="sync", description="Owner only")
 async def sync(ctx):
     # Later replace by checking if user is admin
-    if ctx.author.id == 198894978737373184:
+    if ctx.author.id == 162227524498096128:
         # Syncing
         await ctx.bot.tree.sync()
         await ctx.reply("Syncing done !")
