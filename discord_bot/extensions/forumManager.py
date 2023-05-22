@@ -58,9 +58,20 @@ class ForumManager(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        
 
+    @commands.hybrid_command(name="load_configs", description="Génère des objets forums et des fichiers de configuration pour les serveurs qui n'en auraient pas.")
+    async def load_configs(self, ctx: commands.Context):
+        await self.reload()
+        await ctx.send("Done!", delete_after=5)
 
+    @commands.hybrid_command(name="reload_config", description="Recharge la configuration en fonction du contenu du fichier JSON associé.")
+    async def reload_config(self, ctx: commands.Context):
+        if ctx.guild.id in ACTIVE_FORUMS.keys():
+            forum = ACTIVE_FORUMS[ctx.guild.id]
+            forum.load_config()
+            await ctx.send("Done!", delete_after=5)
+        else:
+            await ctx.send("Erreur: pas d'objet Forum pour ce serveur - pas de configuration associée ; utilisez _/load_configs_.")
 
 async def setup(bot) -> None:
     manager = ForumManager(bot)
