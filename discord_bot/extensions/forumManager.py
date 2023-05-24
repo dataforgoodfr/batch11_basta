@@ -59,11 +59,17 @@ class ForumManager(commands.Cog):
 
     @commands.hybrid_command(name="load_forums", description="Génère des objets forums et des fichiers de configuration pour les serveurs qui n'en auraient pas.")
     async def load_configs(self, ctx: commands.Context):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message("Vous n'avez pas le droit d'utiliser cette commande.", ephemeral=True, delete_after=10)
+            return
         await self.reload()
         await ctx.send("Done!", delete_after=5)
 
     @commands.hybrid_command(name="reload_config", description="Recharge la configuration en fonction du contenu du fichier JSON associé.")
     async def reload_config(self, ctx: commands.Context):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message("Vous n'avez pas le droit d'utiliser cette commande.", ephemeral=True, delete_after=10)
+            return
         if ctx.guild.id in ACTIVE_FORUMS.keys():
             forum = ACTIVE_FORUMS[ctx.guild.id]
             forum.load_config()

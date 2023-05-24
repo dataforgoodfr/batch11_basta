@@ -45,12 +45,12 @@ async def setup_hook() -> None:
 @bot.command(name="sync", description="Owner only")
 async def sync(ctx):
     # Later replace by checking if user is admin
-    if ctx.author.id == 162227524498096128:
+    if ctx.author.guild_permissions.administrator:
         # Syncing
         await ctx.bot.tree.sync()
         await ctx.reply("Syncing done !")
     else:
-        await ctx.reply(f"You're not Augustin, your id is {ctx.author.id}")
+        await ctx.reply(f"You're not admin!")
 
 
 # Always better if run at the end
