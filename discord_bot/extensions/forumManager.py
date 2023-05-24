@@ -26,8 +26,6 @@ class Forum():
 
     def load_config(self):
 
-        # TODO: sécurité?
-
         config_filename = "./configurations/"+str(self.server_id)+".json"
 
         if not exists(config_filename):
