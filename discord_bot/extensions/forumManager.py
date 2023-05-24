@@ -73,6 +73,11 @@ class ForumManager(commands.Cog):
         else:
             await ctx.send("Erreur: pas d'objet Forum pour ce serveur - pas de configuration associée ; utilisez _/load_configs_.")
 
+    # Lorsque le bot rejoint un nouveau serveur -> créer un objet Forum (et une configuration associée)
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        Forum.generate(self.bot, guild.id)
+
 async def setup(bot) -> None:
     manager = ForumManager(bot)
     await bot.add_cog(manager)
