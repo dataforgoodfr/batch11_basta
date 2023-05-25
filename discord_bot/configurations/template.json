@@ -1,0 +1,29 @@
+{
+    "GENERAL": {
+        "CHANNELS": {
+            "CREATE_PRIVATE_CHANNEL": -1,
+            "MODERATION_ALERTS": -1,
+
+            "DAY1": {
+                "QUESTIONS": -1,
+                "ANO_ANSWERS": -1
+            },
+            "DAY2": {
+                "QUESTIONS": -1,
+                "ANO_ANSWERS": -1
+            },
+            "DAY3": {
+                "QUESTIONS": -1,
+                "ANO_ANSWERS": -1
+            },
+            "DAY4": {
+                "QUESTIONS": -1,
+                "ANO_ANSWERS": -1
+            },
+            "DAY5": {
+                "QUESTIONS": -1,
+                "ANO_ANSWERS": -1
+            }
+        }
+    }
+}
