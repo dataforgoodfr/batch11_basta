@@ -45,8 +45,6 @@ class privateChannels(commands.Cog):
     
     class ShareButtons(discord.ui.View):
 
-        # TODO: persistence
-
         # Cette sous-classe de bouton permettra de créer les boutons "Jour 1, "Jour 2" etc.
         # On utilise une sous-classe puisque l'on souhaite créer des boutons avec des noms différents mais
         # avec un comportement similaire.
