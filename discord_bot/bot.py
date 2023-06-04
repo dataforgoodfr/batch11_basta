@@ -34,7 +34,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 # be careful to load the extensions BEFORE running the bot
 extensions = (
     "extensions.forumManager",
-    "extensions.dayManager",
+    "extensions.schedulerManager",
 )
 
 # Setup Logging

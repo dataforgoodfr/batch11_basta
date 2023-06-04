@@ -6,60 +6,79 @@ from shutil import copyfile
 
 from discord.ext import commands
 
+from .schedulerManager import Scheduler
+
 __all__ = ["ForumManager"]
-
-# Ce dictionnaire fait le lien entre 'ID du serveur' -> 'Objet Forum associé'
-ACTIVE_FORUMS = {}
-
-
-def get_forums():
-    return ACTIVE_FORUMS
-
-
-def get_forum(server_id: int):
-    return (
-        ACTIVE_FORUMS[server_id] if server_id in ACTIVE_FORUMS.keys() else None
-    )
 
 
 # Un objet Forum par serveur
 class Forum:
-    def __init__(self, bot: commands.Bot, server_id: int):
+    def __init__(
+        self,
+        bot: commands.Bot,
+        server_id: int,
+        config: dict,
+        config_filename: str,
+    ):
         self.bot = bot
         self.server_id = server_id
+        self.scheduler = Scheduler(bot, self)
+        self.config = config
+        self.config_filename = config_filename
 
-    def load_config(self):
-        config_filename = "./configurations/" + str(self.server_id) + ".json"
+    @classmethod
+    def generate(cls, bot: commands.Bot, server_id: int):  # FACTORY METHOD
+        config, config_filename = Forum.find_config(server_id)
+        forum = cls(bot, server_id, config, config_filename)
+        bot.get_cog("ForumManager").ACTIVE_FORUMS[server_id] = forum
+        return forum
+
+    @staticmethod
+    def find_config(server_id: int) -> (dict, str):
+        config_filename = "./configurations/" + str(server_id) + ".json"
 
         if not exists(config_filename):
             copyfile("./configurations/template.json", config_filename)
 
         with open(config_filename) as config_file:
-            self.CONFIG = json.load(config_file)
+            config = json.load(config_file)
 
-    def get_config(self):
-        return self.CONFIG
+        return config, config_filename
 
-    def generate(bot: commands.Bot, server_id: int):  # FACTORY METHOD
-        forum = Forum(bot, server_id)
-        ACTIVE_FORUMS[server_id] = forum
+    def set_config(self, config: dict):
+        self.config = config
+        # Write the config to the file
+        with open(self.config_filename, "w") as config_file:
+            json.dump(config, config_file, indent=4)
 
-        forum.load_config()
-
-        return forum
+    def set_days_config(self, days_config: dict):
+        self.config["GENERAL"]["CHANNELS"]["DAYS"] = days_config
+        self.set_config(self.config)
 
 
 # Un objet pour le bot, chargé de gérer les objets Forum
 class ForumManager(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        # Dict {'ID du serveur' : 'Objet Forum associé'}
+        self.ACTIVE_FORUMS = {}
+
+    def get_forums(self):
+        return self.ACTIVE_FORUMS
+
+    def get_forum(self, server_id: int):
+        return (
+            self.ACTIVE_FORUMS[server_id]
+            if server_id in self.ACTIVE_FORUMS.keys()
+            else None
+        )
+
     async def reload(self):
         async for guild in self.bot.fetch_guilds():
-            if guild.id not in ACTIVE_FORUMS.keys():
+            if guild.id not in self.ACTIVE_FORUMS.keys():
                 # Voir si passer seulement l'ID suffit où si il y a un gain à
                 # passer l'objet guild entièrement
                 Forum.generate(self.bot, guild.id)
-
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
 
     @commands.hybrid_command(
         name="load_forums",
@@ -90,8 +109,8 @@ class ForumManager(commands.Cog):
                 delete_after=10,
             )
             return
-        if ctx.guild.id in ACTIVE_FORUMS.keys():
-            forum = ACTIVE_FORUMS[ctx.guild.id]
+        if ctx.guild.id in self.ACTIVE_FORUMS.keys():
+            forum = self.ACTIVE_FORUMS[ctx.guild.id]
             forum.load_config()
             await ctx.send("Done!", delete_after=5)
         else:
