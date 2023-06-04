@@ -63,8 +63,8 @@ class ForumManager(commands.Cog):
 
     @commands.hybrid_command(
         name="load_forums",
-        description="Génère des objets forums et des fichiers de \
-            configuration pour les serveurs qui n'en auraient pas.",
+        description="Génère des objets forums et des \
+        fichiers de configuration pour les serveurs sans",
     )
     async def load_configs(self, ctx: commands.Context):
         if not ctx.message.author.guild_permissions.administrator:
