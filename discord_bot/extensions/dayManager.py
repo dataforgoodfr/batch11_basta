@@ -1,9 +1,8 @@
-from discord.ext import commands, tasks
-
-from json import load
-from datetime import timezone, time
-
 from dataclasses import dataclass
+from datetime import time, timezone
+from json import load
+
+from discord.ext import commands, tasks
 
 __all__ = ["DayManager"]
 
@@ -12,9 +11,13 @@ with open("./configuration.json") as json_data_file:
 
 utc = timezone.utc
 
-OPENING_CHANNEL_HOUR_TIMES = [time(hour=raw_conf["OPENING_CHANNEL_HOUR"], tzinfo=utc)]
+OPENING_CHANNEL_HOUR_TIMES = [
+    time(hour=raw_conf["OPENING_CHANNEL_HOUR"], tzinfo=utc)
+]
 
-CLOSING_CHANNEL_HOUR_TIMES = [time(hour=raw_conf["CLOSING_CHANNEL_HOUR"], tzinfo=utc)]
+CLOSING_CHANNEL_HOUR_TIMES = [
+    time(hour=raw_conf["CLOSING_CHANNEL_HOUR"], tzinfo=utc)
+]
 
 MESSAGE_HOUR_TIMES = [
     time(hour=raw_conf["FIRST_MESSAGE_HOUR"], tzinfo=utc),
@@ -57,7 +60,9 @@ class DayManager(commands.Cog):
     # Gather the messages
 
     # command named stopBot to stop the bot
-    @commands.hybrid_command(name="nextmessage", description="Send the next message")
+    @commands.hybrid_command(
+        name="nextmessage", description="Send the next message"
+    )
     async def sendMessageCommand(self, ctx):
         await self.sendMessage()
 
@@ -73,7 +78,7 @@ class DayManager(commands.Cog):
     @tasks.loop(time=MESSAGE_HOUR_TIMES)
     async def messages_job(self):
         # Send messages
-        await sendMessage()
+        await self.sendMessage()
 
     async def sendMessage(self):
         # Looping
@@ -86,6 +91,7 @@ class DayManager(commands.Cog):
         self.message_nb += 1
 
 
-# Adding the cog to the bot. It is required to do this in order to use the commands
+# Adding the cog to the bot
+# It is required to do this in order to use the commands
 async def setup(bot) -> None:
     await bot.add_cog(DayManager(bot))
