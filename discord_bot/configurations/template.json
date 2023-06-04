@@ -3,24 +3,28 @@
         "CHANNELS": {
             "CREATE_PRIVATE_CHANNEL": -1,
             "MODERATION_ALERTS": -1,
-
             "DAY1": {
+                "CHANNEL_ID": -1,
                 "QUESTIONS": -1,
                 "ANO_ANSWERS": -1
             },
             "DAY2": {
+                "CHANNEL_ID": -1,
                 "QUESTIONS": -1,
                 "ANO_ANSWERS": -1
             },
             "DAY3": {
+                "CHANNEL_ID": -1,
                 "QUESTIONS": -1,
                 "ANO_ANSWERS": -1
             },
             "DAY4": {
+                "CHANNEL_ID": -1,
                 "QUESTIONS": -1,
                 "ANO_ANSWERS": -1
             },
             "DAY5": {
+                "CHANNEL_ID": -1,
                 "QUESTIONS": -1,
                 "ANO_ANSWERS": -1
             }
