@@ -1,14 +1,37 @@
 {
+    "day0": {
+        "script": [
+            "sentence1",
+            "sentence2",
+            "sentence3"
+        ]
+    },
     "day1": {
-        "script": ["sentence1", "sentence2", "sentence3"]
+        "script": [
+            "sentence1",
+            "sentence2",
+            "sentence3"
+        ]
     },
     "day2": {
-        "script": ["sentence1", "sentence2", "sentence3"]
+        "script": [
+            "sentence1",
+            "sentence2",
+            "sentence3"
+        ]
     },
     "day3": {
-        "script": ["sentence1", "sentence2", "sentence3"]
+        "script": [
+            "sentence1",
+            "sentence2",
+            "sentence3"
+        ]
     },
     "day4": {
-        "script": ["sentence1", "sentence2", "sentence3"]
+        "script": [
+            "sentence1",
+            "sentence2",
+            "sentence3"
+        ]
     }
 }
