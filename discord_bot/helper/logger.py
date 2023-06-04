@@ -1,8 +1,13 @@
 import logging
+import os
 from datetime import datetime
 
 
 def setupLogger():
+    # If logs folder doesn't exist, create it
+    if not os.path.exists("logs"):
+        os.makedirs("logs")
+
     # get root logger
     logger = logging.getLogger()
 
