@@ -35,13 +35,13 @@
                     "ANO_ANSWERS": -1
                 }
             ]
-        }
-    },
-    "OPENING_CHANNEL_HOUR": 6,
-    "CLOSING_CHANNEL_HOUR": 0,
-    "MESSAGES_HOURS": [
-        7,
-        12,
-        17
-    ]
+        },
+        "OPENING_CHANNEL_HOUR": 6,
+        "CLOSING_CHANNEL_HOUR": 0,
+        "MESSAGES_HOURS": [
+            7,
+            12,
+            17
+        ]
+    }
 }
