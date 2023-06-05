@@ -12,6 +12,8 @@ __all__ = ["ForumManager"]
 
 
 # Un objet Forum par serveur
+# Bizzare mais il n'a pas besoin d'hériter de commands.Cog pour créer des tasks
+# ce qui nous arrange BEAUCOUP alors que dans la doc c'est dit que si
 class Forum:
     def __init__(
         self,
@@ -22,14 +24,15 @@ class Forum:
     ):
         self.bot = bot
         self.server_id = server_id
-        self.scheduler = Scheduler(bot, self)
         self.config = config
         self.config_filename = config_filename
 
-    @classmethod
-    def generate(cls, bot: commands.Bot, server_id: int):  # FACTORY METHOD
+    @classmethod  # FACTORY METHOD
+    async def generate(cls, bot: commands.Bot, server_id: int):
         config, config_filename = Forum.find_config(server_id)
         forum = cls(bot, server_id, config, config_filename)
+        scheduler = Scheduler(bot, forum)
+        forum.scheduler = scheduler
         bot.get_cog("ForumManager").ACTIVE_FORUMS[server_id] = forum
         return forum
 
@@ -78,7 +81,7 @@ class ForumManager(commands.Cog):
             if guild.id not in self.ACTIVE_FORUMS.keys():
                 # Voir si passer seulement l'ID suffit où si il y a un gain à
                 # passer l'objet guild entièrement
-                Forum.generate(self.bot, guild.id)
+                await Forum.generate(self.bot, guild.id)
 
     @commands.hybrid_command(
         name="load_forums",
@@ -123,7 +126,7 @@ class ForumManager(commands.Cog):
     # -> créer un objet Forum (et une configuration associée)
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        Forum.generate(self.bot, guild.id)
+        await Forum.generate(self.bot, guild.id)
 
 
 async def setup(bot) -> None:

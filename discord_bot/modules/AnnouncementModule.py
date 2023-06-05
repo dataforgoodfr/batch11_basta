@@ -17,25 +17,32 @@ async def send_next_message(days_config: dict, bot) -> dict:
     # Next question
     current_question += 1
 
-    # If there is no more message to send
-    if current_question == len(SCRIPT[f"day{current_day}"]):
-        print("No more message to send")
+    if current_day == -1:
+        raise ValueError(
+            "The current day is not set in the config. Please set it."
+        )
     else:
-        # Send the message
+        # If there is no more message to send
+        if current_question >= len(SCRIPT[f"day{current_day}"]["script"]):
+            print("No more message to send")
+        else:
+            # Send the message
 
-        channel_id = days_config[current_day]["CHANNEL_ID"]
-        if channel_id == -1:
-            raise ValueError(
-                "The channel id is not set in the config. Please set it."
-            )
-        channel = bot.get_channel(channel_id)
-        day_script = SCRIPT[f"day{current_day}"]["script"][current_question]
-        await channel.send(day_script)
+            channel_id = days_config[current_day]["CHANNEL_ID"]
+            if channel_id == -1:
+                raise ValueError(
+                    "The channel id is not set in the config. Please set it."
+                )
+            channel = bot.get_channel(channel_id)
+            day_script = SCRIPT[f"day{current_day}"]["script"][
+                current_question
+            ]
+            await channel.send(day_script)
 
-    # Update the config
-    days_config[current_day]["QUESTION_NO"] = current_question
+        # Update the config
+        days_config[current_day]["QUESTION_NO"] = current_question
 
-    return days_config
+        return days_config
 
 
 # return the day and the last question asked in a tuple
@@ -51,3 +58,27 @@ def get_current_state(days_config: dict) -> tuple:
             break
 
     return (day_nb, last_question)
+
+
+async def send_end_of_day_message(days_config: dict, bot):
+    current_day, current_question = get_current_state(days_config)
+
+    # Send the end of day message
+    channel_id = days_config[current_day]["CHANNEL_ID"]
+    if channel_id == -1:
+        raise ValueError(
+            "The channel id is not set in the config. Please set it."
+        )
+    channel = bot.get_channel(channel_id)
+    await channel.send(f"Fin de la journée n°{current_day+1}")
+
+
+async def send_end_of_forum_message(days_config: dict, bot):
+    # Send the end of forum message
+    channel_id = days_config[-1]["CHANNEL_ID"]
+    if channel_id == -1:
+        raise ValueError(
+            "The channel id is not set in the config. Please set it."
+        )
+    channel = bot.get_channel(channel_id)
+    await channel.send("Fin du forum")
