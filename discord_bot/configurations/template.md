@@ -10,6 +10,7 @@ Je n'ai pas trouvé d'outil permettant de recenser les champs d'un fichier JSON 
       - `CREATE_PRIVATE_CHANNEL` (bool ?) : ?
       - `MODERATION_ALERTS` (bool ?) : ?
       - `DAYS` (list[dict]) : Liste des jours de la semaine. Le nombre de jour varie selon la longueur du tableau
+        - `IS_CURRENT_DAY` (bool) : Si c'est le jour actuel
         - `CHANNEL_ID` (int) : ID du channel de discussion pour la journée. -1 si aucun jour n'a été lancé
         - `QUESTION_NO` (int) : Numéro de la dernière question posée. -1 si aucune question n'a encore été posée 
         - `ANO_ANSWERS` (?)  : ?
