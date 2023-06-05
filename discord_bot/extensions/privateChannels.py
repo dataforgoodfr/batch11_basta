@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands, tasks
 from dataclasses import dataclass
 
+from extensions.forumManager import get_forum, get_forums
+
 __all__ = ["privateChannels"]
 
 # CONFIGURATION
@@ -43,6 +45,29 @@ class privateChannels(commands.Cog):
             await privateChannels.createPrivateChannel(interaction)
             await interaction.response.defer() # Marque l'interaction comme terminée pour éviter des messages "L'interaction a échoué"
     
+    class ConfirmShareButton(discord.ui.View):
+
+        def __init__(self):
+            super().__init__(timeout=None)
+
+        @discord.ui.button(label="Confirmer le partage", style=discord.ButtonStyle.primary, custom_id="100")
+        async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.defer()
+            message_list = []
+            async for message in interaction.channel.history(limit=100):
+                if message.author == interaction.user:
+                    for reaction in message.reactions: # TODO: optimisation
+                        if reaction.emoji == "✅" and interaction.user in [user async for user in reaction.users()]:
+                            message_list.append(message)
+                            break
+            forum = get_forum(interaction.guild.id)
+            config = forum.get_config()
+            ano_answers = config["GENERAL"]["CHANNELS"]["DAY1"]["ANO_ANSWERS"]
+            channel = interaction.guild.get_channel(ano_answers)
+            message_list.reverse()
+            for message in message_list:
+                await channel.send(message.content)
+
     class ShareButtons(discord.ui.View):
 
         # Cette sous-classe de bouton permettra de créer les boutons "Jour 1, "Jour 2" etc.
@@ -57,6 +82,7 @@ class privateChannels(commands.Cog):
             async def callback(self, interaction: discord.Interaction):
                 await interaction.response.send_message(f"yes {self.label}") # Temporaire
                 await interaction.channel.send(f"channel: {interaction.channel.id}")
+                await interaction.channel.send("Allez", view=privateChannels.ConfirmShareButton())
 
         # La view crée 5 boutons "Jour 1", "Jour 2" etc. à l'initialisation.
         def __init__(self):
@@ -99,3 +125,4 @@ async def setup(bot) -> None:
     await bot.add_cog(privateChannels(bot))
     bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
     bot.add_view(privateChannels.ShareButtons()) # Persistance des boutons de partage des jours
+    bot.add_view(privateChannels.ConfirmShareButton())
