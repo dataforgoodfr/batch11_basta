@@ -29,7 +29,7 @@
                     "ANO_ANSWERS": -1
                 },
                 {
-                    "IS_TODAY": false,
+                    "IS_CURRENT_DAY": false,
                     "CHANNEL_ID": -1,
                     "QUESTION_NO": -1,
                     "ANO_ANSWERS": -1
