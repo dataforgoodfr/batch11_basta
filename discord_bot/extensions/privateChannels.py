@@ -24,6 +24,21 @@ class privateChannels(commands.Cog):
         embed.set_footer(text="Ce qui est dit dans les canaux privés n'est pas enregistré, sauf si tu donnes explicitement ton accord !")
         return embed
     
+    def embed_welcome():
+        embed=discord.Embed(title="🔒 Ton canal privé 🔒", description="Exprime-toi comme tu l'entends ! Tu peux ici témoigner anonymement, ou bien nous contacter si tu as besoin d'aide !")
+        embed.add_field(name="🔗 Partager anonymement ton témoignage", value="> Ton témoignage peut apparaître dans le canal \"réponse anonyme\" du jour que tu souhaites ! Pour ce faire, clique simplement sur le jour auquel ton témoignage fait référence et suis les instructions.", inline=False)
+        embed.set_footer(text="Le contenu de ce canal ne sera pas enregistré.")
+        return embed
+    
+    def embed_share(day: int):
+        embed=discord.Embed(title="▶️ Partager ton témoignage")
+        embed.add_field(name="", value=f"> Réagis avec '✅' aux messages que tu souhaites partager \n\n > Clique sur 'Confirmer le partage' et ton message sera partagé dans le canal de réponses anonymes du **Jour {day}** !", inline=False)
+        return embed
+    
+    def embed_close():
+        embed=discord.Embed(title="❌ Confirmer la suppression ❌ ", color=0xff0000)
+        embed.add_field(name="Êtes-vous sûr de vouloir supprimer le canal ?", value="Toute suppression est définitive et irréversible. Les messages seront perdus.", inline=False)
+        return embed
 
     # VIEWS
     # Les views permettent de créer des dispositions de 'components' Discord. Dans notre cas, elles sont utiles
@@ -46,9 +61,10 @@ class privateChannels(commands.Cog):
     
     class ConfirmShareButton(discord.ui.View):
 
+        slow_mode = {}
+
         def __init__(self):
             super().__init__(timeout=None)
-            self.slow_mode = {}
 
         @staticmethod
         async def get_messages(author, history):
@@ -84,6 +100,15 @@ class privateChannels(commands.Cog):
 
             self.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
 
+    class ConfirmCloseButton(discord.ui.View):
+        def __init__(self):
+            super().__init__(timeout=None)
+
+        @discord.ui.button(label="Confirmer la suppression", style=discord.ButtonStyle.danger, custom_id="103")
+        async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.defer()
+            await interaction.channel.delete()
+
     class ShareButtons(discord.ui.View):
 
         # Cette sous-classe de bouton permettra de créer les boutons "Jour 1, "Jour 2" etc.
@@ -96,9 +121,8 @@ class privateChannels(commands.Cog):
                 # Les boutons correspondant à des jours non ouverts sont désactivés.
             
             async def callback(self, interaction: discord.Interaction):
-                await interaction.response.send_message(f"yes {self.label}") # Temporaire
-                await interaction.channel.send(f"channel: {interaction.channel.id}")
-                await interaction.channel.send("Allez", view=privateChannels.ConfirmShareButton())
+                await interaction.channel.send(embed=privateChannels.embed_share(int(self.custom_id)-1), view=privateChannels.ConfirmShareButton())
+                await interaction.response.defer()
 
         class RefreshButton(discord.ui.Button):
             def __init__(self, label, style, custom_id, disabled):
@@ -107,6 +131,13 @@ class privateChannels(commands.Cog):
             async def callback(self, interaction: discord.Interaction):
                 await interaction.message.edit(view=privateChannels.ShareButtons(current_day=5)) #TODO: current day
                 await interaction.response.defer()
+
+        class CloseButton(discord.ui.Button):
+            def __init__(self, label, style, custom_id, disabled):
+                super().__init__(label=label, style=style, custom_id=custom_id, disabled=disabled)
+
+            async def callback(self, interaction: discord.Interaction):
+                await interaction.response.send_message(embed=privateChannels.embed_close(), view=privateChannels.ConfirmCloseButton(), delete_after=120)
 
         # La view crée 5 boutons "Jour 1", "Jour 2" etc. à l'initialisation.
         def __init__(self, current_day=3):
@@ -117,6 +148,7 @@ class privateChannels(commands.Cog):
                 # est nécessaire de les ajouter manuellement à notre view.
                 self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i+1 > current_day)))
             self.add_item(self.RefreshButton(label="🔄", style=discord.ButtonStyle.secondary, custom_id="101", disabled=False))
+            self.add_item(self.CloseButton(label="Fermer le canal", style=discord.ButtonStyle.danger, custom_id="102", disabled=False))
 
     # UTILS
     
@@ -134,8 +166,8 @@ class privateChannels(commands.Cog):
         } # Les overwrites permettent de changer les paramètres du canal au moment de sa création.
 
         channel = await interaction.channel.category.create_text_channel("canal privé XXXX", overwrites=overwrites)
-        await channel.send(f"Bienvenue {interaction.user.mention}, ici tu peux t'exprimer comme tu l'entends.")
-        await channel.send("Partage :)", view=privateChannels.ShareButtons())
+        await channel.send(embed=privateChannels.embed_welcome(), view=privateChannels.ShareButtons())
+        await channel.send(f"✅ Ton canal personnel a été créé {interaction.user.mention} !", delete_after=20)
 
     # COMMANDS
 
@@ -151,3 +183,4 @@ async def setup(bot) -> None:
     bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
     bot.add_view(privateChannels.ShareButtons()) # Persistance des boutons de partage des jours
     bot.add_view(privateChannels.ConfirmShareButton())
+    bot.add_view(privateChannels.ConfirmCloseButton())
