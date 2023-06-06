@@ -1,13 +1,4 @@
 # TODO
 
-Liste des choses à faire pour le projet. Vous pouvez vous ateler à la tâche qui vous convient mais il est possible que certaines demandent que d'autre tâches soient déjà effectuées comme pré-requis.
-
-- [x] Ajouter un script divisé en journées
-  - Est-ce que JSON est le meilleur format pour le stocker ?
-- [ ] Ajouter des commandes pour gérer les journées telles que :
-  - [x] `start day` : pour commencer la journée
-  - [x] `stop day` : pour arrêter la journée (sans la lancer automatiquement)
-  - [ ] `skip day` : pour passer à la journée suivante (et la lancer automatiquement)
-  - [ ] `make conclusion` : pour lancer le processus de récupération des messages
-- [x] Ajouter un système de timer pour envoyer des messages à une heure précise (des heures ont été décidées durant les réunions)
-  - Au final, on utilise la fonction [task de discord.py](https://discordpy.readthedocs.io/en/stable/ext/tasks/index.html) qui convient parfaitement à notre besoin
+- Diviser en deux étapes le bot, le setup, où il va générer le fichier de config, et le run, où il va lancer le bot avec le fichier de config. On est censé modifier le fichier de config entre les deux. Pour l'instant, il se base sur le template ou le fichier pré-existant, mais ne laisse pas de temps pour le configurer.
+- Fix l'issue qui fait que la commande /start_forum laisse le bot tourner et afficher un message d'erreur dans discord mais sans pour autant que le script ne crash

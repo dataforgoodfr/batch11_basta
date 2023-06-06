@@ -178,4 +178,12 @@ pyrightconfig.json
 scraping/data
 
 # logging
-logs/
+discord_bot/logs/*
+
+# VS Code
+.vscode/
+
+# Exclude generated configurations unless they are template files
+# Ca va poser problème si on veut upload les configurations manuelles donc il faudra en discuter
+discord_bot/configurations/*
+!discord_bot/configurations/template*

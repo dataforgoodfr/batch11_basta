@@ -1,21 +1,26 @@
+import os
+
 import discord
 
-# Bot class is specially designed for to create bots so we use it instead of the Client class
+# Finally, we're using extensions and Cogs as intented by discord.py
+# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
+# Finally, we're using extensions and Cogs as intented by discord.py
+# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
+from discord.ext import commands
+from dotenv import load_dotenv
+from helper.logger import setupLogger
+
+# Bot class is specially designed for to create bots,
+# so we use it instead of the Client class
 # https://stackoverflow.com/questions/51234778/what-are-the-differences-between-bot-and-client
 
 # We also choose to use the commands and tasks in order to run recurrent tasks
 # https://discordpy.readthedocs.io/en/latest/ext/commands/commands.html
 # https://discordpy.readthedocs.io/en/latest/ext/tasks/index.html
 
-# Finally, we're using extensions and Cogs as intented by discord.py
-# https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
-from discord.ext import commands
 
-import os
-from dotenv import load_dotenv
 load_dotenv()
 
-from helper.logger import setupLogger
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -26,9 +31,12 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=".", intents=intents)
 
 
-
 # be careful to load the extensions BEFORE running the bot
-extensions = ("extensions.privateChannels",)
+extensions = (
+    "extensions.forumManager",
+    "extensions.schedulerManager",
+    "extensions.privateChannels",
+)
 
 # Setup Logging
 # We don't use the built-in logging system of discord.py
@@ -50,7 +58,7 @@ async def sync(ctx):
         await ctx.bot.tree.sync()
         await ctx.reply("Syncing done !")
     else:
-        await ctx.reply(f"You're not admin!")
+        await ctx.reply("You're not admin!")
 
 
 # Always better if run at the end
