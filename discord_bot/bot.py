@@ -32,6 +32,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 
 
 # be careful to load the extensions BEFORE running the bot
+# /!\ WARNING: Keep an extra comma following the last extension name or it won't be loaded!
 extensions = (
     "extensions.forumManager",
     "extensions.schedulerManager",
