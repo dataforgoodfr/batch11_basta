@@ -3,6 +3,7 @@
 import json
 from os.path import exists
 from shutil import copyfile
+from typing import Tuple
 
 from discord.ext import commands
 
@@ -37,7 +38,7 @@ class Forum:
         return forum
 
     @staticmethod
-    def find_config(server_id: int) -> (dict, str):
+    def find_config(server_id: int) -> Tuple[dict, str]:
         config_filename = "./configurations/" + str(server_id) + ".json"
 
         if not exists(config_filename):

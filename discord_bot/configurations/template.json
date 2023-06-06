@@ -1,8 +1,7 @@
 {
     "GENERAL": {
         "CHANNELS": {
-            "CREATE_PRIVATE_CHANNEL": -1,
-            "MODERATION_ALERTS": -1,
+            "MODERATION_ALERTS_CHANNEL": -1,
             "DAYS": [
                 {
                     "IS_CURRENT_DAY": false,
@@ -43,5 +42,9 @@
             12,
             17
         ]
+    },
+
+    "PRIVATE_CHANNELS": {
+        "PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL": -1
     }
 }
