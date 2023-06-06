@@ -25,13 +25,13 @@ class privateChannels(commands.Cog):
         return embed
     
     def embed_welcome():
-        embed=discord.Embed(title="🔒 Ton canal privé 🔒", description="Exprime-toi comme tu l'entends ! Tu peux ici témoigner anonymement, ou bien nous contacter si tu as besoin d'aide !")
+        embed=discord.Embed(title="🔒 Ton canal privé 🔒", description="Exprime-toi comme tu l'entends ! Tu peux ici témoigner anonymement, ou bien nous contacter si tu as besoin d'aide !", color=0x09b6e1)
         embed.add_field(name="🔗 Partager anonymement ton témoignage", value="> Ton témoignage peut apparaître dans le canal \"réponse anonyme\" du jour que tu souhaites ! Pour ce faire, clique simplement sur le jour auquel ton témoignage fait référence et suis les instructions.", inline=False)
         embed.set_footer(text="Le contenu de ce canal ne sera pas enregistré.")
         return embed
     
     def embed_share(day: int):
-        embed=discord.Embed(title="▶️ Partager ton témoignage")
+        embed=discord.Embed(title="▶️ Partager ton témoignage", color=0x1ae843)
         embed.add_field(name="", value=f"> Réagis avec '✅' aux messages que tu souhaites partager \n\n > Clique sur 'Confirmer le partage' et ton message sera partagé dans le canal de réponses anonymes du **Jour {day}** !", inline=False)
         return embed
     
@@ -61,6 +61,8 @@ class privateChannels(commands.Cog):
     
     class ConfirmShareButton(discord.ui.View):
 
+        # /!\ CECI EST UN ATTRIBUT DE CLASSE. Il est accessible par toutes les instances mais il est unique.
+        # Ainsi, le slow mode est général et pas seulement propre à un seul message avec des boutons.
         slow_mode = {}
 
         def __init__(self):
