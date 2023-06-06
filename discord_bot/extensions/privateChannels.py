@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands, tasks
 from dataclasses import dataclass
-
-from extensions.forumManager import get_forum, get_forums
+import time
 
 __all__ = ["privateChannels"]
 
@@ -49,9 +48,13 @@ class privateChannels(commands.Cog):
 
         def __init__(self):
             super().__init__(timeout=None)
+            self.slow_mode = {}
 
         @discord.ui.button(label="Confirmer le partage", style=discord.ButtonStyle.primary, custom_id="100")
         async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+            if interaction.user.id in self.slow_mode.keys() and time.time() <= self.slow_mode[interaction.user.id]:
+                await interaction.response.send_message("Vous ne pouvez faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
+                return
             await interaction.response.defer()
             message_list = []
             async for message in interaction.channel.history(limit=100):
@@ -60,13 +63,14 @@ class privateChannels(commands.Cog):
                         if reaction.emoji == "✅" and interaction.user in [user async for user in reaction.users()]:
                             message_list.append(message)
                             break
-            forum = get_forum(interaction.guild.id)
-            config = forum.get_config()
-            ano_answers = config["GENERAL"]["CHANNELS"]["DAY1"]["ANO_ANSWERS"]
+            forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
+            config = forum.config
+            ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][0]["ANO_ANSWERS"] #TODO: get current_day
             channel = interaction.guild.get_channel(ano_answers)
             message_list.reverse()
             for message in message_list:
                 await channel.send(message.content)
+            self.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
 
     class ShareButtons(discord.ui.View):
 
