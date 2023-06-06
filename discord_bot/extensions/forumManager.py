@@ -3,7 +3,9 @@
 import json
 from os.path import exists
 from shutil import copyfile
+from typing import Tuple
 
+import modules.AnnouncementModule as AnnouncementModule
 from discord.ext import commands
 
 from .schedulerManager import Scheduler
@@ -26,6 +28,7 @@ class Forum:
         self.server_id = server_id
         self.config = config
         self.config_filename = config_filename
+        self.is_running = False
 
     @classmethod  # FACTORY METHOD
     async def generate(cls, bot: commands.Bot, server_id: int):
@@ -37,7 +40,7 @@ class Forum:
         return forum
 
     @staticmethod
-    def find_config(server_id: int) -> (dict, str):
+    def find_config(server_id: int) -> Tuple[dict, str]:
         config_filename = "./configurations/" + str(server_id) + ".json"
 
         if not exists(config_filename):
@@ -57,6 +60,28 @@ class Forum:
     def set_days_config(self, days_config: dict):
         self.config["GENERAL"]["CHANNELS"]["DAYS"] = days_config
         self.set_config(self.config)
+
+    # Allow user @everyone to send messages in the channels
+    async def open_time_limited_channels(self):
+        channels_ids = self.config["GENERAL"]["TIME_RESTRICTED_CHANNELS"]
+        for channel_id in channels_ids:
+            channel = self.bot.get_channel(channel_id)
+            await channel.set_permissions(
+                self.bot.get_guild(self.server_id).default_role,
+                send_messages=True,
+            )
+        await AnnouncementModule.send_opening_messages(channels_ids, self.bot)
+
+    # Disallow user @everyone to send messages in the channels
+    async def close_time_limited_channels(self):
+        channels_ids = self.config["GENERAL"]["TIME_RESTRICTED_CHANNELS"]
+        for channel_id in channels_ids:
+            channel = self.bot.get_channel(channel_id)
+            await channel.set_permissions(
+                self.bot.get_guild(self.server_id).default_role,
+                send_messages=False,
+            )
+        await AnnouncementModule.send_closing_messages(channels_ids, self.bot)
 
 
 # Un objet pour le bot, chargé de gérer les objets Forum
