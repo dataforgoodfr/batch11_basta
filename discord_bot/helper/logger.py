@@ -26,10 +26,3 @@ def setupLogger():
 
     # set logging level
     logger.setLevel(logging.DEBUG)
-
-    # TODO
-    # - Add a formatter to the file handler
-    # - Add a different log level for file than for stream:
-    #   - stream must be warning
-    #   - file must be debug
-    # - Add a rotating file handler
