@@ -82,3 +82,15 @@ async def send_end_of_forum_message(days_config: dict, bot):
         )
     channel = bot.get_channel(channel_id)
     await channel.send("Fin du forum")
+
+
+async def send_opening_messages(channelsIds: list[int], bot) -> None:
+    for channel_id in channelsIds:
+        channel = bot.get_channel(channel_id)
+        await channel.send("Vous pouvez de nouveau écrire dans ce channel.")
+
+
+async def send_closing_messages(channelsIds: list[int], bot) -> None:
+    for channel_id in channelsIds:
+        channel = bot.get_channel(channel_id)
+        await channel.send("Vous ne pouvez plus écrire dans ce channel.")

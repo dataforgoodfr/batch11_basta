@@ -12,7 +12,7 @@ __all__ = ["SchedulerManager"]
 
 UTC = datetime.timezone.utc
 
-is_accelerated = True
+is_accelerated = False
 
 
 class Scheduler:
@@ -38,11 +38,21 @@ class Scheduler:
         # Met à jour la config
         self.forum.set_days_config(days_config)
 
-        # Lance les tâches à répétition
-        # Tâche de messages à envoyer
+        # Lance les tâches à répétition :
 
+        # Ouvrir les channels
         if is_accelerated:
-            self.message_job.change_interval(seconds=3)
+            self.open_channels_job.change_interval(seconds=10)
+        else:
+            open_channels_time = datetime.time(
+                hour=config["GENERAL"]["OPENING_CHANNEL_HOUR"], tzinfo=UTC
+            )
+            self.open_channels_job.change_interval(time=open_channels_time)
+        self.open_channels_job.start()
+
+        # Messages à envoyer régulièrement
+        if is_accelerated:
+            self.message_job.change_interval(seconds=5)
         else:
             messages_times = [
                 datetime.time(hour=hour, tzinfo=UTC)
@@ -51,15 +61,15 @@ class Scheduler:
             self.message_job.change_interval(time=messages_times)
         self.message_job.start()
 
-        # - Changer de jour à chaque fin de journée
+        # Fermer les channels et passer au jour suivant
         if is_accelerated:
-            self.day_job.change_interval(seconds=10)
+            self.close_channels_job.change_interval(seconds=7)
         else:
-            daily_close_time = datetime.time(
+            close_channels_time = datetime.time(
                 hour=config["GENERAL"]["CLOSING_CHANNEL_HOUR"], tzinfo=UTC
             )
-            self.day_job.change_interval(time=daily_close_time)
-        self.day_job.start()
+            self.close_channels_job.change_interval(time=close_channels_time)
+        self.close_channels_job.start()
 
     async def next_day(self) -> None:
         # Récupère la configuration
@@ -114,11 +124,19 @@ class Scheduler:
         self.forum.set_days_config(days_config)
 
     @tasks.loop()
-    async def day_job(self) -> None:
+    async def open_channels_job(self) -> None:
         # Skip the first occurrence (whent starting the forum)
-        if self.day_job.current_loop == 0:
+        if self.open_channels_job.current_loop == 0:
+            return
+        await self.forum.open_time_limited_channels()
+
+    @tasks.loop()
+    async def close_channels_job(self) -> None:
+        # Skip the first occurrence (whent starting the forum)
+        if self.close_channels_job.current_loop == 0:
             return
         await self.next_day()
+        await self.forum.close_time_limited_channels()
 
 
 class SchedulerManager(commands.Cog):
