@@ -24,19 +24,21 @@ class Scheduler:
         return self.forum.config
 
     # Commence le forum
-    async def start_forum(self) -> None:
+    async def start_forum(self, ctx) -> None:
+        # Si forum déjà lancé, on renvoi un message d'erreur
+        if self.forum.is_running:
+            await AnnouncementModule.send_already_started_message(
+                ctx, self.bot
+            )
+            return
+
         # Commence le premier jour
+        self.forum.is_running = True
         config = self.get_config()
         config["GENERAL"]["CHANNELS"]["DAYS"][0]["IS_CURRENT_DAY"] = True
 
-        # Envoie le message suivant
-        days_config = await AnnouncementModule.send_next_message(
-            config["GENERAL"]["CHANNELS"]["DAYS"],
-            self.bot,
-        )
-
-        # Met à jour la config
-        self.forum.set_days_config(days_config)
+        # Envoie un message de démarage
+        await AnnouncementModule.send_start_of_forum_message(ctx, self.bot)
 
         # Lance les tâches à répétition :
 
@@ -52,7 +54,7 @@ class Scheduler:
 
         # Messages à envoyer régulièrement
         if is_accelerated:
-            self.message_job.change_interval(seconds=5)
+            self.message_job.change_interval(seconds=1)
         else:
             messages_times = [
                 datetime.time(hour=hour, tzinfo=UTC)
@@ -63,7 +65,7 @@ class Scheduler:
 
         # Fermer les channels et passer au jour suivant
         if is_accelerated:
-            self.close_channels_job.change_interval(seconds=7)
+            self.close_channels_job.change_interval(seconds=9)
         else:
             close_channels_time = datetime.time(
                 hour=config["GENERAL"]["CLOSING_CHANNEL_HOUR"], tzinfo=UTC
@@ -102,7 +104,9 @@ class Scheduler:
 
                     # On arrête l'envoi de message et le changement de jour
                     self.message_job.cancel()
-                    self.day_job.cancel()
+
+                    # On arrête le forum
+                    self.forum.is_running = False
                 break
 
         # Met à jour la config
@@ -160,7 +164,29 @@ class SchedulerManager(commands.Cog):
         # Get the scheduler associated with the server
         forum = self.get_forum(ctx.guild.id)
         scheduler = forum.scheduler
-        await scheduler.start_forum()
+        await scheduler.start_forum(ctx)
+
+    @commands.hybrid_command(name="open_channels")
+    async def open_channels(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            forum = self.get_forum(ctx.guild.id)
+            await forum.open_time_limited_channels()
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="close_channels")
+    async def close_channels(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            forum = self.get_forum(ctx.guild.id)
+            await forum.close_time_limited_channels()
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
 
 
 async def setup(bot) -> None:

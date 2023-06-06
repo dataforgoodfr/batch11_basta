@@ -28,6 +28,7 @@ class Forum:
         self.server_id = server_id
         self.config = config
         self.config_filename = config_filename
+        self.is_running = False
 
     @classmethod  # FACTORY METHOD
     async def generate(cls, bot: commands.Bot, server_id: int):
@@ -151,19 +152,6 @@ class ForumManager(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         await Forum.generate(self.bot, guild.id)
-
-    # Si on veut ouvrir ou fermer manuellement les channels
-    @commands.hybrid_command(name="open_channels")
-    async def open_channels(self, ctx: commands.Context):
-        if ctx.guild.id in self.ACTIVE_FORUMS.keys():
-            forum = self.ACTIVE_FORUMS[ctx.guild.id]
-            await forum.open_time_limited_channels()
-
-    @commands.hybrid_command(name="close_channels")
-    async def close_channels(self, ctx: commands.Context):
-        if ctx.guild.id in self.ACTIVE_FORUMS.keys():
-            forum = self.ACTIVE_FORUMS[ctx.guild.id]
-            await forum.close_time_limited_channels()
 
 
 async def setup(bot) -> None:

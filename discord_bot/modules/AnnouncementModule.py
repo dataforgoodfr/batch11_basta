@@ -10,6 +10,15 @@ with open("script.json") as script_file:
     SCRIPT = json.load(script_file)
 
 
+async def send_already_started_message(ctx, bot):
+    await ctx.channel.send("Le forum a déjà commencé !")
+
+
+async def send_start_of_forum_message(ctx, bot):
+    channel = ctx.channel
+    await channel.send("Début du forum")
+
+
 # Envoye le message suivant sur le bon channel
 async def send_next_message(days_config: dict, bot) -> dict:
     current_day, current_question = get_current_state(days_config)
