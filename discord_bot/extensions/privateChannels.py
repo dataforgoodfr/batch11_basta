@@ -50,26 +50,38 @@ class privateChannels(commands.Cog):
             super().__init__(timeout=None)
             self.slow_mode = {}
 
+        @staticmethod
+        async def get_messages(author, history):
+            '''Returns a list with the messages the author reacted to using the checkmark emoji.'''
+            message_list = []
+            async for message in history:
+                if message.author == author:
+                    for reaction in message.reactions: # TODO: optimisation
+                        if reaction.emoji == "✅" and author in [user async for user in reaction.users()]:
+                            message_list.append(message)
+                            break
+            message_list.reverse()
+            return message_list
+
         @discord.ui.button(label="Confirmer le partage", style=discord.ButtonStyle.primary, custom_id="100")
         async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+
+            # SLOW MODE - Pour prévenir le spam dans le canal des réponses anonymes 
             if interaction.user.id in self.slow_mode.keys() and time.time() <= self.slow_mode[interaction.user.id]:
                 await interaction.response.send_message("Vous ne pouvez faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
                 return
+            
             await interaction.response.defer()
-            message_list = []
-            async for message in interaction.channel.history(limit=100):
-                if message.author == interaction.user:
-                    for reaction in message.reactions: # TODO: optimisation
-                        if reaction.emoji == "✅" and interaction.user in [user async for user in reaction.users()]:
-                            message_list.append(message)
-                            break
+            message_list = await self.get_messages(interaction.user, interaction.channel.history(limit=100))
+
             forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
             config = forum.config
             ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][0]["ANO_ANSWERS"] #TODO: get current_day
             channel = interaction.guild.get_channel(ano_answers)
-            message_list.reverse()
+
             for message in message_list:
                 await channel.send(message.content)
+
             self.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
 
     class ShareButtons(discord.ui.View):
