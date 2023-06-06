@@ -100,14 +100,23 @@ class privateChannels(commands.Cog):
                 await interaction.channel.send(f"channel: {interaction.channel.id}")
                 await interaction.channel.send("Allez", view=privateChannels.ConfirmShareButton())
 
+        class RefreshButton(discord.ui.Button):
+            def __init__(self, label, style, custom_id, disabled):
+                super().__init__(label=label, style=style, custom_id=custom_id, disabled=disabled)
+
+            async def callback(self, interaction: discord.Interaction):
+                await interaction.message.edit(view=privateChannels.ShareButtons(current_day=5)) #TODO: current day
+                await interaction.response.defer()
+
         # La view crée 5 boutons "Jour 1", "Jour 2" etc. à l'initialisation.
-        def __init__(self):
+        def __init__(self, current_day=3):
             super().__init__(timeout=None)
             for i in range(5):
                 # Le décorateur utilisée dans la sous-classe PrivateChannelButton crée et ajoute automatiquement
                 # le bouton à la view. Dans notre cas, vu que l'on déclare nous-même les objects ShareButton, il
                 # est nécessaire de les ajouter manuellement à notre view.
-                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i+1 > CURRENT_DAY))) # TODO: handle custom ids
+                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i+1 > current_day)))
+            self.add_item(self.RefreshButton(label="🔄", style=discord.ButtonStyle.secondary, custom_id="101", disabled=False))
 
     # UTILS
     
