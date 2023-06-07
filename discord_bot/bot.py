@@ -28,6 +28,9 @@ intents = discord.Intents.default()
 # Required to read users messages
 intents.message_content = True
 
+#Necessary to get a member from its id
+intents.members = True 
+
 bot = commands.Bot(command_prefix=".", intents=intents)
 
 
