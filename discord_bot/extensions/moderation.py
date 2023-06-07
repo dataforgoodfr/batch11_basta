@@ -16,15 +16,30 @@ class Moderation(commands.Cog):
         embed.add_field(name="Message signalé", value=f"Auteur : {message.author.mention}\n Canal : {message.channel.mention}\n Lien : {message.jump_url}\n Contenu : {message.content}", inline=False)
         return embed
 
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction: discord.Reaction, user):
-        if reaction.emoji == "🏴":
-            await reaction.remove(user=user)
-            forum = self.bot.get_cog("ForumManager").get_forum(reaction.message.guild.id)
-            config = forum.config
-            channel = reaction.message.guild.get_channel(config["GENERAL"]["CHANNELS"]["MODERATION_ALERTS_CHANNEL"])
+    # @commands.Cog.listener()
+    # async def on_reaction_add(self, reaction: discord.Reaction, user):
+    #     if reaction.emoji == "🏴":
+    #         await reaction.remove(user=user)
+    #         forum = self.bot.get_cog("ForumManager").get_forum(reaction.message.guild.id)
+    #         config = forum.config
+    #         channel = reaction.message.guild.get_channel(config["GENERAL"]["CHANNELS"]["MODERATION_ALERTS_CHANNEL"])
 
-            await channel.send(embed=Moderation.embed_report(str(datetime.now()), user, reaction.message))
+    #         await channel.send(embed=Moderation.embed_report(str(datetime.now()), user, reaction.message))
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        if str(payload.emoji) == "🏴":
+            guild = self.bot.get_guild(payload.guild_id)
+            channel = guild.get_channel(payload.channel_id)
+            message = await channel.fetch_message(payload.message_id)
+            await message.remove_reaction("🏴", payload.member)
+
+            forum = self.bot.get_cog("ForumManager").get_forum(payload.guild_id)
+            config = forum.config
+            mod_channel = guild.get_channel(config["GENERAL"]["CHANNELS"]["MODERATION_ALERTS_CHANNEL"])
+            user = guild.get_member(payload.user_id)
+
+            await mod_channel.send(embed=Moderation.embed_report(str(datetime.now()), user, message))
 
 
 async def setup(bot) -> None:
