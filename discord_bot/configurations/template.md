@@ -17,7 +17,7 @@ Je n'ai pas trouvé d'outil permettant de recenser les champs d'un fichier JSON 
     - `CLOSING_CHANNEL_HOUR` (int) : Heure de fermeture des canaux de discussion
     - `TIME_RESTRICTED_CHANNELS` (list[int]) : Liste des channels dont l'accès est restreint selon les heures d'ouverture et de fermeture
     - `MESSAGES_HOURS` (list[int]) : Heure d'envoi des messages automatiques. Attention, si il y a plus d'heures que de messages, le bot renverra des messages d'erreurs (dans les logs) lors des heures sans message. Si il y a plus de messages que d'heures, certains messages ne seront pas envoyés.
-- `PRIVATE_CHANNELS` (dict) : Configuration relative à l'extension privateChannels
+- `PRIVATE_CHANNELS` (dict) : Configuration de l'extension privateChannels
   - `PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL` (int) : ID du channel contenant le bouton de création de canaux privés
 - `ROLE_MANAGER` (dict) : Configuration de l'extension RoleManager
   - `RULE_MESSAGE_ID` (int) : ID du message auquel il faut réagir pour obtenir le rôle permettant l'accès au serveur
