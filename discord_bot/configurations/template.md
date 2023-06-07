@@ -12,7 +12,7 @@ Je n'ai pas trouvé d'outil permettant de recenser les champs d'un fichier JSON 
         - `IS_CURRENT_DAY` (bool) : Si c'est le jour actuel
         - `CHANNEL_ID` (int) : ID du channel de discussion pour la journée. -1 si aucun jour n'a été lancé
         - `QUESTION_NO` (int) : Numéro de la dernière question posée. -1 si aucune question n'a encore été posée 
-        - `ANO_ANSWERS` (?)  : ?
+        - `ANO_ANSWERS` (int)  : ID du channel "réponses-anonymes" du jour
     - `OPENING_CHANNEL_HOUR` (int) : Heure d'ouverture des canaux de discussion
     - `CLOSING_CHANNEL_HOUR` (int) : Heure de fermeture des canaux de discussion
     - `TIME_RESTRICTED_CHANNELS` (list[int]) : Liste des channels dont l'accès est restreint selon les heures d'ouverture et de fermeture
