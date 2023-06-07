@@ -16,6 +16,12 @@ class Moderation(commands.Cog):
         embed.add_field(name="Message signalé", value=f"Auteur : {message.author.mention}\n Canal : {message.channel.mention}\n Lien : {message.jump_url}\n Contenu : {message.content}", inline=False)
         return embed
 
+    # AU 07/06/2023 -> Je garde la version utilisant le listener 'on_reaction_add()' puisqu'il est plus simple.
+    #                  Si la version 'on_raw_reaction_add()' contient des bugs, il est toujours possible de la remplacer
+    #                  par la version commentée ci-dessous.
+
+    # Cette version (commentée) ne gère par les réactions sur les messages envoyés avant que le bot soit lancé.
+
     # @commands.Cog.listener()
     # async def on_reaction_add(self, reaction: discord.Reaction, user):
     #     if reaction.emoji == "🏴":
