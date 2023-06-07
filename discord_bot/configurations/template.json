@@ -48,5 +48,10 @@
 
     "PRIVATE_CHANNELS": {
         "PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL": -1
+    },
+
+    "ROLE_MANAGER": {
+        "RULE_MESSAGE_ID": -1,
+        "BASE_ROLE_ID": -1
     }
 }
