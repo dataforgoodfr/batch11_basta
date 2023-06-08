@@ -39,6 +39,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 extensions = (
     "extensions.forumManager",
     "extensions.schedulerManager",
+    "extensions.moderation",
     "extensions.roleManager",
 )
 
