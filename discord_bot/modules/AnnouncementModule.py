@@ -73,13 +73,12 @@ async def send_end_of_day_message(config: dict, bot):
     await channel.send(f"Fin de la journée n°{current_day+1}")
 
 
-async def send_end_of_forum_message(days_config: dict, bot):
+async def send_end_of_forum_message(config: dict, bot):
     # Send the end of forum message
-    channel_id = days_config[-1]["CHANNEL_ID"]
+    channel_id = config["GENERAL"]["CHANNELS"]["DAYS"][-1]["CHANNEL_ID"]
+    current_day = config["GENERAL"]["CURRENT_DAY"]
     if channel_id == -1:
-        logging.error(
-            f"Le channel id du jour {len(days_config)} n'est pas défini."
-        )
+        logging.error(f"Le channel id du jour {current_day} n'est pas défini.")
     channel = bot.get_channel(channel_id)
     await channel.send("Fin du forum")
 

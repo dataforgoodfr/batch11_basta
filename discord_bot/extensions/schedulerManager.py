@@ -96,14 +96,13 @@ class Scheduler:
 
                 # On arrête l'envoi de message et le changement de jour
                 self.message_job.cancel()
+                self.open_channels_job.cancel()
+                self.close_channels_job.cancel()
 
                 # On arrête le forum
                 config["GENERAL"]["CURRENT_DAY"] = -1
         else:
-            logging.warning(
-                "Le forum n'a pas encore commencé,"
-                / "impossible de passer au jour suivant"
-            )
+            logging.warning("Le forum n'a pas encore commencé")
 
         # Met à jour la config
         self.forum.set_config(config)
