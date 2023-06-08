@@ -13,7 +13,7 @@ __all__ = ["SchedulerManager"]
 
 UTC = datetime.timezone.utc
 
-is_accelerated = False
+is_accelerated = True
 
 
 class Scheduler:
@@ -73,7 +73,7 @@ class Scheduler:
     async def next_day(self) -> None:
         # Récupère la configuration
         config = self.forum.config
-        nb_days = len(config["GENERAL"]["DAYS"])
+        nb_days = len(config["GENERAL"]["CHANNELS"]["DAYS"])
 
         jour_actuel = config["GENERAL"]["CURRENT_DAY"]
         if jour_actuel != -1:

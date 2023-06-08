@@ -23,7 +23,9 @@ async def send_start_of_forum_message(ctx, bot):
 # Envoye le message suivant sur le bon channel
 async def send_next_message(config: dict, bot) -> dict:
     current_day = config["GENERAL"]["CURRENT_DAY"]
-    current_question = config["GENERAL"]["DAYS"][current_day]["QUESTION_NO"]
+    current_question = config["GENERAL"]["CHANNELS"]["DAYS"][current_day][
+        "QUESTION_NO"
+    ]
 
     # Next question
     current_question += 1
@@ -33,11 +35,13 @@ async def send_next_message(config: dict, bot) -> dict:
     else:
         # If there is no more message to send
         if current_question >= len(SCRIPT[f"day{current_day}"]["script"]):
-            logging.info("No more message to send")
+            logging.warn("No more message to send")
         else:
             # Send the message
 
-            channel_id = config["GENERAL"]["DAYS"][current_day]["CHANNEL_ID"]
+            channel_id = config["GENERAL"]["CHANNELS"]["DAYS"][current_day][
+                "CHANNEL_ID"
+            ]
             if channel_id == -1:
                 logging.error(
                     f"Le channel id du jour {current_day} n'est pas défini."
@@ -49,7 +53,7 @@ async def send_next_message(config: dict, bot) -> dict:
             await channel.send(day_script)
 
         # Update the config
-        config["GENERAL"]["DAYS"][current_day][
+        config["GENERAL"]["CHANNELS"]["DAYS"][current_day][
             "QUESTION_NO"
         ] = current_question
 
@@ -60,7 +64,9 @@ async def send_end_of_day_message(config: dict, bot):
     current_day = config["GENERAL"]["CURRENT_DAY"]
 
     # Send the end of day message
-    channel_id = config["GENERAL"]["DAYS"][current_day]["CHANNEL_ID"]
+    channel_id = config["GENERAL"]["CHANNELS"]["DAYS"][current_day][
+        "CHANNEL_ID"
+    ]
     if channel_id == -1:
         logging.error(f"Le channel id du jour {current_day} n'est pas défini.")
     channel = bot.get_channel(channel_id)
