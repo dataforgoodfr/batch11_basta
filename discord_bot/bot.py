@@ -27,6 +27,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 intents = discord.Intents.default()
 # Required to read users messages
 intents.message_content = True
+intents.members = True
 
 bot = commands.Bot(command_prefix=".", intents=intents)
 
@@ -36,6 +37,7 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 extensions = (
     "extensions.forumManager",
     "extensions.schedulerManager",
+    "extensions.moderation",
 )
 
 # Setup Logging
