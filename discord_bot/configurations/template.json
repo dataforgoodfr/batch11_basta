@@ -29,22 +29,19 @@
                 }
             ]
         },
-        "CURRENT_DAY": 0,
+        "CURRENT_DAY": -1,
         "OPENING_CHANNEL_HOUR": 6,
         "CLOSING_CHANNEL_HOUR": 0,
-        "TIME_RESTRICTED_CHANNELS": [
-        ],
+        "TIME_RESTRICTED_CHANNELS": [],
         "MESSAGES_HOURS": [
             7,
             12,
             17
         ]
     },
-
     "PRIVATE_CHANNELS": {
         "PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL": -1
     },
-
     "MODERATION": {
         "MODERATION_ALERTS_CHANNEL": -1,
         "REPORT_EMOJI": "<:moderation:1116306344635539466>"
