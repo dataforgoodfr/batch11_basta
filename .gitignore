@@ -187,3 +187,6 @@ discord_bot/logs/*
 # Ca va poser problème si on veut upload les configurations manuelles donc il faudra en discuter
 discord_bot/configurations/*
 !discord_bot/configurations/template*
+
+# Exclude data files
+discord_bot/data/*
