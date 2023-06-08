@@ -1,6 +1,5 @@
 {
     "GENERAL": {
-        "CURRENT_DAY": 0,
         "CHANNELS": {
             "DAYS": [
                 {
@@ -30,6 +29,7 @@
                 }
             ]
         },
+        "CURRENT_DAY": 0,
         "OPENING_CHANNEL_HOUR": 6,
         "CLOSING_CHANNEL_HOUR": 0,
         "TIME_RESTRICTED_CHANNELS": [
