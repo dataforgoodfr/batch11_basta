@@ -150,7 +150,7 @@ class privateChannels(commands.Cog):
                 # est nécessaire de les ajouter manuellement à notre view.
                 self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i+1 > current_day)))
             self.add_item(self.RefreshButton(label="🔄", style=discord.ButtonStyle.secondary, custom_id="101", disabled=False))
-            self.add_item(self.CloseButton(label="Fermer le canal", style=discord.ButtonStyle.danger, custom_id="102", disabled=False))
+            # self.add_item(self.CloseButton(label="Fermer le canal", style=discord.ButtonStyle.danger, custom_id="102", disabled=False))
 
     # UTILS
     
@@ -164,8 +164,8 @@ class privateChannels(commands.Cog):
         forum = interaction.client.get_cog("ForumManager").get_forum(guild.id)
         data = forum.get_data("privateChannels")
 
-        if "channels" in data.keys() and user.id in data["channels"].keys():
-            channel = guild.get_channel(data["channels"][user.id])
+        if "channels" in data.keys() and str(user.id) in data["channels"].keys():
+            channel = guild.get_channel(data["channels"][str(user.id)])
             await channel.send(content=f"⚠️ Tu ne peux posséder qu'un seul canal privé, {user.mention}.", delete_after=20)
             return
 
@@ -186,7 +186,7 @@ class privateChannels(commands.Cog):
 
         if "channels" not in data.keys():
             data["channels"] = {}
-        data["channels"][user.id] = channel.id
+        data["channels"][str(user.id)] = channel.id
         forum.save_data("privateChannels", data)
 
     # COMMANDS
