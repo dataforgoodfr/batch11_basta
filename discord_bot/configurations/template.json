@@ -1,33 +1,29 @@
 {
     "GENERAL": {
+        "CURRENT_DAY": 0,
         "CHANNELS": {
             "DAYS": [
                 {
-                    "IS_CURRENT_DAY": false,
                     "CHANNEL_ID": -1,
                     "QUESTION_NO": -1,
                     "ANO_ANSWERS": -1
                 },
                 {
-                    "IS_CURRENT_DAY": false,
                     "CHANNEL_ID": -1,
                     "QUESTION_NO": -1,
                     "ANO_ANSWERS": -1
                 },
                 {
-                    "IS_CURRENT_DAY": false,
                     "CHANNEL_ID": -1,
                     "QUESTION_NO": -1,
                     "ANO_ANSWERS": -1
                 },
                 {
-                    "IS_CURRENT_DAY": false,
                     "CHANNEL_ID": -1,
                     "QUESTION_NO": -1,
                     "ANO_ANSWERS": -1
                 },
                 {
-                    "IS_CURRENT_DAY": false,
                     "CHANNEL_ID": -1,
                     "QUESTION_NO": -1,
                     "ANO_ANSWERS": -1
