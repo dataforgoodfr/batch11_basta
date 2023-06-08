@@ -161,6 +161,12 @@ class privateChannels(commands.Cog):
         user = interaction.user # La personne qui demande la création d'un canal privé
         admin = guild.get_role(ADMIN_ROLE_ID)
 
+        forum = interaction.client.get_cog("ForumManager").get_forum(guild.id)
+        data = forum.get_data("privateChannels")
+
+        if "channels" in data.keys() and user.id in data["channels"].keys():
+            return
+
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False),
             user: discord.PermissionOverwrite(read_messages=True),
@@ -170,6 +176,11 @@ class privateChannels(commands.Cog):
         channel = await interaction.channel.category.create_text_channel("canal privé XXXX", overwrites=overwrites)
         await channel.send(embed=privateChannels.embed_welcome(), view=privateChannels.ShareButtons())
         await channel.send(f"✅ Ton canal personnel a été créé {interaction.user.mention} !", delete_after=20)
+
+        if "channels" not in data.keys():
+            data["channels"] = {}
+        data["channels"][user.id] = channel.id
+        forum.save_data("privateChannels", data)
 
     # COMMANDS
 
