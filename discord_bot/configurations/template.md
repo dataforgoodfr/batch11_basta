@@ -20,3 +20,6 @@ Je n'ai pas trouvé d'outil permettant de recenser les champs d'un fichier JSON 
 - `PRIVATE_CHANNELS` (dict) : Configuration de l'extension privateChannels
   - `PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL` (int) : ID du channel contenant le bouton de création de canaux privés
   - `SHARING_COOLDOWN` (int) : Durée en secondes du délai par utilisateur entre chaque partage de témoignage anonyme
+- `MODERATION` (dict) : Configuration de l'extension moderation
+  - `MODERATION_ALERTS_CHANNEL` (int) : ID du channel où le bot doit poster les signalements
+  - `REPORT_EMOJI` (str) : ID de l'emoji devant être utilisé pour signaler un message
