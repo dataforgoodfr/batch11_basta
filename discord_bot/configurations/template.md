@@ -19,3 +19,6 @@ Je n'ai pas trouvé d'outil permettant de recenser les champs d'un fichier JSON 
     - `MESSAGES_HOURS` (list[int]) : Heure d'envoi des messages automatiques. Attention, si il y a plus d'heures que de messages, le bot renverra des messages d'erreurs (dans les logs) lors des heures sans message. Si il y a plus de messages que d'heures, certains messages ne seront pas envoyés.
 - `PRIVATE_CHANNELS` (dict) : Configuration de l'extension privateChannels
   - `PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL` (int) : ID du channel contenant le bouton de création de canaux privés
+- `MODERATION` (dict) : Configuration de l'extension moderation
+  - `MODERATION_ALERTS_CHANNEL` (int) : ID du channel où le bot doit poster les signalements
+  - `REPORT_EMOJI` (str) : ID de l'emoji devant être utilisé pour signaler un message

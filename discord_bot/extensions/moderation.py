@@ -34,15 +34,15 @@ class Moderation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        if str(payload.emoji) == "🏴":
+        config = self.bot.get_cog("ForumManager").get_forum(payload.guild_id).config
+        emoji = config["MODERATION"]["REPORT_EMOJI"]
+        if str(payload.emoji) == emoji:
             guild = self.bot.get_guild(payload.guild_id)
             channel = guild.get_channel(payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
-            await message.remove_reaction("🏴", payload.member)
+            await message.remove_reaction(payload.emoji, payload.member)
 
-            forum = self.bot.get_cog("ForumManager").get_forum(payload.guild_id)
-            config = forum.config
-            mod_channel = guild.get_channel(config["GENERAL"]["CHANNELS"]["MODERATION_ALERTS_CHANNEL"])
+            mod_channel = guild.get_channel(config["MODERATION"]["MODERATION_ALERTS_CHANNEL"])
             user = guild.get_member(payload.user_id)
 
             await mod_channel.send(embed=Moderation.embed_report(str(datetime.now()), user, message))
