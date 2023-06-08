@@ -46,6 +46,7 @@ class Moderation(commands.Cog):
             user = guild.get_member(payload.user_id)
 
             await mod_channel.send(embed=Moderation.embed_report(str(datetime.now()), user, message))
+            await user.send("✅ Ton signalement a été pris en compte ! ")
 
 
 async def setup(bot) -> None:
