@@ -2,6 +2,7 @@
 
 import json
 from os.path import exists
+from os import mkdir
 from shutil import copyfile
 from typing import Tuple
 
@@ -23,17 +24,22 @@ class Forum:
         server_id: int,
         config: dict,
         config_filename: str,
+        data: dict,
+        data_filename: str
     ):
         self.bot = bot
         self.server_id = server_id
         self.config = config
         self.config_filename = config_filename
+        self.data = data
+        self.data_filename = data_filename
         self.is_running = False
 
     @classmethod  # FACTORY METHOD
     async def generate(cls, bot: commands.Bot, server_id: int):
         config, config_filename = Forum.find_config(server_id)
-        forum = cls(bot, server_id, config, config_filename)
+        data, data_filename = Forum.find_data(server_id)
+        forum = cls(bot, server_id, config, config_filename, data, data_filename)
         scheduler = Scheduler(bot, forum)
         forum.scheduler = scheduler
         bot.get_cog("ForumManager").ACTIVE_FORUMS[server_id] = forum
@@ -60,6 +66,34 @@ class Forum:
     def set_days_config(self, days_config: dict):
         self.config["GENERAL"]["CHANNELS"]["DAYS"] = days_config
         self.set_config(self.config)
+
+    def find_data(server_id: int) -> Tuple[dict, str]:
+        data_filename = "./data/" + str(server_id) + ".json"
+
+        if not exists("./data"):
+            mkdir("./data")
+
+        if not exists(data_filename):
+            return {}, data_filename
+        
+        with open(data_filename) as data_file:
+            data = json.load(data_file)
+        
+        return data, data_filename
+
+    def save_data(self, key, value):
+
+        self.data[key] = value
+
+        with open(self.data_filename, "w") as data_file:
+            json.dump(self.data, data_file, indent=4)
+
+    def get_data(self, key):
+        return (
+            self.data[key]
+            if key in self.data.keys()
+            else {}
+        )
 
     # Allow user @everyone to send messages in the channels
     async def open_time_limited_channels(self):
