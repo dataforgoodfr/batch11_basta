@@ -165,6 +165,8 @@ class privateChannels(commands.Cog):
         data = forum.get_data("privateChannels")
 
         if "channels" in data.keys() and user.id in data["channels"].keys():
+            channel = guild.get_channel(data["channels"][user.id])
+            await channel.send(content=f"⚠️ Tu ne peux posséder qu'un seul canal privé, {user.mention}.", delete_after=20)
             return
 
         overwrites = {
@@ -173,9 +175,14 @@ class privateChannels(commands.Cog):
             admin: discord.PermissionOverwrite(read_messages=True)
         } # Les overwrites permettent de changer les paramètres du canal au moment de sa création.
 
-        channel = await interaction.channel.category.create_text_channel("canal privé XXXX", overwrites=overwrites)
+        if "counter" not in data.keys():
+            data["counter"] = 0
+
+        channel = await interaction.channel.category.create_text_channel("canal privé "+"{:04d}".format(data["counter"]), overwrites=overwrites)
         await channel.send(embed=privateChannels.embed_welcome(), view=privateChannels.ShareButtons())
         await channel.send(f"✅ Ton canal personnel a été créé {interaction.user.mention} !", delete_after=20)
+
+        data["counter"] = data["counter"] + 1
 
         if "channels" not in data.keys():
             data["channels"] = {}
