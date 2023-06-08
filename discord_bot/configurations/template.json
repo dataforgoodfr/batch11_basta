@@ -51,6 +51,6 @@
 
     "MODERATION": {
         "MODERATION_ALERTS_CHANNEL": -1,
-        "REPORT_EMOJI": "<:moderation:1116306344635539466>"
+        "REPORT_EMOJI": null
     }
 }
