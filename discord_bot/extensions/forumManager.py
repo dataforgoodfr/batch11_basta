@@ -92,7 +92,7 @@ class Forum:
         return (
             self.data[key]
             if key in self.data.keys()
-            else None
+            else {}
         )
 
     # Allow user @everyone to send messages in the channels
