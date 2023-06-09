@@ -155,6 +155,13 @@ class SchedulerManager(commands.Cog):
         description="Lance le forum ainsi avec les configurations chargées",
     )
     async def start_forum(self, ctx: commands.Context) -> None:
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
         # Get the scheduler associated with the server
         forum = self.get_forum(ctx.guild.id)
         scheduler = forum.scheduler

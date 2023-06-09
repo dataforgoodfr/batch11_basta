@@ -190,6 +190,13 @@ class ForumManager(commands.Cog):
         description="Lance un sondage",
     )
     async def poll(self, ctx, multivote: bool, question, options: str):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
         forum = self.get_forum(ctx.guild.id)
         poll = {
             "question": question,
@@ -202,6 +209,13 @@ class ForumManager(commands.Cog):
         name="getpolls", description="Sauvegarde les sondages dans un fichier"
     )
     async def getpolls(self, ctx):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
         forum = self.get_forum(ctx.guild.id)
         await PollModule.fetch_polls(forum)
 
