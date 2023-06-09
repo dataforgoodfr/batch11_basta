@@ -180,6 +180,11 @@ class ForumManager(commands.Cog):
     async def on_guild_join(self, guild):
         await Forum.generate(self.bot, guild.id)
 
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        forum = self.get_forum(reaction.message.guild.id)
+        await PollModule.checkReaction(reaction, user, forum)
+
     @commands.hybrid_command(
         name="poll",
         description="Lance un sondage",
@@ -191,7 +196,7 @@ class ForumManager(commands.Cog):
             "options": options.split(","),
             "multivote": multivote,
         }
-        PollModule.send_poll(poll, ctx.channel, forum)
+        await PollModule.send_poll(poll, ctx.channel, forum)
 
     @commands.hybrid_command(
         name="getpolls", description="Sauvegarde les sondages dans un fichier"

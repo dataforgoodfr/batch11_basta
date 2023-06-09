@@ -28,12 +28,11 @@ async def send_poll(poll: dict, channel, forum) -> int:
                 "You cannot make a poll for more than 10 things!"
             )
         return
-
     if len(options) == 2 and (
-        (options[0].lower, options[1].lower) == ("oui", "non")
-        or (options[0].lower, options[1].lower) == ("non", "oui")
+        (options[0].lower(), options[1].lower()) == ("oui", "non")
+        or (options[0].lower(), options[1].lower()) == ("non", "oui")
     ):
-        reactions = ["✅", "❌"]
+        reactions = ["✅", "❌"] if options[0].lower() == "oui" else ["❌", "✅"]
     else:
         reactions = [
             "1️⃣",
@@ -147,3 +146,22 @@ def save_poll(forum, message) -> None:
     else:
         polls_data = {message.id: message.channel.id}
     forum.save_data("polls", polls_data)
+
+
+def is_multivote_allowed(reaction) -> bool:
+    title = reaction.message.embeds[0].title
+    return "\nVous pouvez voter pour plusieurs options." in title
+
+
+def is_poll(forum, reaction) -> bool:
+    data_polls = forum.get_data("polls")
+    return reaction.message.id in data_polls.keys()
+
+
+async def checkReaction(user_reaction, user, forum):
+    if is_poll(forum, user_reaction) and not user.bot:
+        if not is_multivote_allowed(user_reaction):
+            # On retire les autres réactions
+            for reaction in user_reaction.message.reactions:
+                if reaction.emoji != user_reaction.emoji:
+                    await reaction.remove(user)
