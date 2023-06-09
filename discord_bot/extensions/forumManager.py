@@ -6,7 +6,6 @@ from os.path import exists
 from shutil import copyfile
 from typing import Tuple
 
-import discord
 import modules.AnnouncementModule as AnnouncementModule
 import modules.PollModule as PollModule
 from discord.ext import commands
@@ -193,6 +192,14 @@ class ForumManager(commands.Cog):
             "multivote": multivote,
         }
         PollModule.send_poll(poll, ctx.channel, forum)
+
+    @commands.hybrid_command(
+        name="getpolls", description="Affiche les sondages en cours"
+    )
+    async def getpolls(self, ctx):
+        forum = self.get_forum(ctx.guild.id)
+        await PollModule.get_polls_result(forum)
+
 
 async def setup(bot) -> None:
     manager = ForumManager(bot)

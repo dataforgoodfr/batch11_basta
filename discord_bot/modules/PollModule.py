@@ -66,59 +66,72 @@ async def send_poll(poll: dict, channel, forum) -> int:
 
     await react_message.edit(embed=embed)
 
-    save_poll(forum, react_message.id)
+    save_poll(forum, react_message)
 
 
-# async def get_polls_result(ctx, forum, bot):
-#     poll_message = await ctx.channel.fetch_message(id)
-#     user_can_multivote = poll_message.embeds[0].title[-3:] == "oui"
-#     embed = poll_message.embeds[0]
+async def get_polls_result(forum) -> None:
+    data_polls = forum.get_data("polls")
+    bot = forum.bot
 
-#     # On retire la dernière phrase, qui fait 36 caractères
-#     title = embed.title[:-36]
+    for message_id, channel_id in data_polls.items():
+        # get the message object from the channel
+        channel = bot.get_channel(channel_id)
+        poll_message = await channel.fetch_message(message_id)
 
-#     splitted_description = embed.description.split("\n")
-#     splitted_description = [x.strip() for x in splitted_description]
-#     if splitted_description[0][:3] == "1️⃣":
-#         # Liste à nombre
-#         opt_dict = {
-#             reaction[:3]: reaction[3:].strip()
-#             for reaction in splitted_description[:9]
-#         }
-#         if len(splitted_description) == 10:
-#             # If there is a tenth option, split it differently
-#             # (because it works that way 🤷)
-#             opt_dict["🔟"] = splitted_description[9][2:].strip()
-#     else:
-#         # yes/no
-#         opt_dict = {
-#             reaction[:1]: reaction[2:].strip()
-#             for reaction in splitted_description
-#         }
+        embed = poll_message.embeds[0]
 
-#     voters = [
-#         bot.user.id
-#     ]  # add the bot's ID to the list of voters to exclude it's votes
+        # On retire la dernière phrase du titre
+        title = "\n".join(embed.title.split("\n")[:-1])
 
-#     tally = {x: 0 for x in opt_dict.keys()}
-#     for reaction in poll_message.reactions:
-#         if reaction.emoji in opt_dict.keys():
-#             reactors = [user async for user in reaction.users()]
-#             for reactor in reactors:
-#                 if reactor.id not in voters:
-#                     tally[reaction.emoji] += 1
-#                     if not user_can_multivote:
-#                         voters.append(reactor.id)
-#     output = f"Results of the poll for '{title}':\n" + "\n".join(
-#         ["{}: {}".format(opt_dict[key], tally[key]) for key in tally.keys()]
-#     )
-#     await ctx.channel.send(output)
+        splitted_description = embed.description.split("\n")
+        splitted_description = [x.strip() for x in splitted_description]
+        if splitted_description[0][:3] == "1️⃣":
+            # Liste à nombre
+            opt_dict = {
+                reaction[:3]: reaction[3:].strip()
+                for reaction in splitted_description[:9]
+            }
+            if len(splitted_description) == 10:
+                # If there is a tenth option, split it differently
+                # (because it works that way 🤷)
+                opt_dict["🔟"] = splitted_description[9][2:].strip()
+        else:
+            # yes/no
+            opt_dict = {
+                reaction[:1]: reaction[2:].strip()
+                for reaction in splitted_description
+            }
+
+        voters = [
+            bot.user.id
+        ]  # add the bot's ID to the list of voters to exclude it's votes
+
+        tally = {x: 0 for x in opt_dict.keys()}
+        for reaction in poll_message.reactions:
+            if reaction.emoji in opt_dict.keys():
+                reactors = [user async for user in reaction.users()]
+                for reactor in reactors:
+                    if reactor.id not in voters:
+                        tally[reaction.emoji] += 1
+        output = f"Results of the poll for '{title}':\n" + "\n".join(
+            [
+                "{}: {}".format(opt_dict[key], tally[key])
+                for key in tally.keys()
+            ]
+        )
+        print(output)
 
 
-def save_poll(forum, pollId: int) -> None:
+def save_poll(forum, message) -> None:
+    """
+    Structure de données d'un sondage
+    {
+        messageId:channelId
+    }
+    """
     polls_data = forum.get_data("polls")
-    if polls_data == {}:
-        polls_data = [pollId]
+    if type(polls_data) is dict:
+        polls_data[message.id] = message.channel.id
     else:
-        polls_data.append(pollId)
+        polls_data = {message.id: message.channel.id}
     forum.save_data("polls", polls_data)
