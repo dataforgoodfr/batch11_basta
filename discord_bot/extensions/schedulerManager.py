@@ -112,12 +112,9 @@ class Scheduler:
         # Skip the first occurrence (whent starting the forum)
         if self.message_job.current_loop == 0:
             return
-        # Récupère la configuration
-        config = self.forum.config
         # Envoie le message suivant
         config = await AnnouncementModule.send_next_message(
-            config,
-            self.bot,
+            self.bot, self.forum
         )
         # Met à jour la config
         self.forum.set_config(config)

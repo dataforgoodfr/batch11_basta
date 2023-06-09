@@ -1,0 +1,92 @@
+[
+    [
+        {
+            "message": "day0sentence0",
+            "polls": [
+                {
+                    "question": "Est-ce que ?",
+                    "options": [
+                        "oui",
+                        "non"
+                    ],
+                    "multivote": false
+                }
+            ]
+        },
+        {
+            "message": "day0sentence1",
+            "polls": []
+        },
+        {
+            "message": "day0sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day1sentence0",
+            "polls": []
+        },
+        {
+            "message": "day1sentence1",
+            "polls": [
+                {
+                    "question": "Quelles couleurs aimes-tu ?",
+                    "options": [
+                        "vert",
+                        "bleu",
+                        "rouge",
+                        "jaune"
+                    ],
+                    "multivote": true
+                }
+            ]
+        },
+        {
+            "message": "day1sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day2sentence0",
+            "polls": []
+        },
+        {
+            "message": "day2sentence1",
+            "polls": []
+        },
+        {
+            "message": "day2sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day3sentence0",
+            "polls": []
+        },
+        {
+            "message": "day3sentence1",
+            "polls": []
+        },
+        {
+            "message": "day3sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day4sentence0",
+            "polls": []
+        },
+        {
+            "message": "day4sentence1",
+            "polls": []
+        },
+        {
+            "message": "day4sentence2",
+            "polls": []
+        }
+    ]
+]
