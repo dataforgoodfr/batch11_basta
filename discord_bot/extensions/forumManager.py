@@ -194,11 +194,11 @@ class ForumManager(commands.Cog):
         PollModule.send_poll(poll, ctx.channel, forum)
 
     @commands.hybrid_command(
-        name="getpolls", description="Affiche les sondages en cours"
+        name="getpolls", description="Sauvegarde les sondages dans un fichier"
     )
     async def getpolls(self, ctx):
         forum = self.get_forum(ctx.guild.id)
-        await PollModule.get_polls_result(forum)
+        await PollModule.fetch_polls(forum)
 
 
 async def setup(bot) -> None:

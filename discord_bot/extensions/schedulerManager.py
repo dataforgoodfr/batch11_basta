@@ -6,6 +6,7 @@ import datetime
 import logging
 
 import modules.AnnouncementModule as AnnouncementModule
+import modules.PollModule as PollModule
 import modules.ReportModule as ReportModule
 from discord.ext import commands, tasks
 
@@ -92,6 +93,7 @@ class Scheduler:
                 await AnnouncementModule.send_end_of_forum_message(
                     config, self.bot
                 )
+                await PollModule.fetch_polls(self.forum)
                 await ReportModule.generate_forum_report()
 
                 # On arrête l'envoi de message et le changement de jour

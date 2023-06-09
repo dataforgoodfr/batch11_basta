@@ -69,9 +69,11 @@ async def send_poll(poll: dict, channel, forum) -> int:
     save_poll(forum, react_message)
 
 
-async def get_polls_result(forum) -> None:
+async def fetch_polls(forum) -> None:
     data_polls = forum.get_data("polls")
     bot = forum.bot
+
+    polls = []
 
     for message_id, channel_id in data_polls.items():
         # get the message object from the channel
@@ -113,13 +115,23 @@ async def get_polls_result(forum) -> None:
                 for reactor in reactors:
                     if reactor.id not in voters:
                         tally[reaction.emoji] += 1
+
+        poll = {
+            "title": title,
+            "description": embed.description,
+            "tally": tally,
+            "opt_dict": opt_dict,
+        }
+        polls.append(poll)
+
         output = f"Results of the poll for '{title}':\n" + "\n".join(
             [
                 "{}: {}".format(opt_dict[key], tally[key])
                 for key in tally.keys()
             ]
         )
-        print(output)
+        logging.info("Logged poll results :\n" + output)
+    forum.save_data("poll_results", polls)
 
 
 def save_poll(forum, message) -> None:
