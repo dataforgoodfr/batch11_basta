@@ -7,6 +7,7 @@ from shutil import copyfile
 from typing import Tuple
 
 import modules.AnnouncementModule as AnnouncementModule
+import modules.PollModule as PollModule
 from discord.ext import commands
 
 from .schedulerManager import Scheduler
@@ -178,6 +179,31 @@ class ForumManager(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         await Forum.generate(self.bot, guild.id)
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        forum = self.get_forum(reaction.message.guild.id)
+        await PollModule.checkReaction(reaction, user, forum)
+
+    @commands.hybrid_command(
+        name="poll",
+        description="Lance un sondage",
+    )
+    async def poll(self, ctx, multivote: bool, question, options: str):
+        forum = self.get_forum(ctx.guild.id)
+        poll = {
+            "question": question,
+            "options": options.split(","),
+            "multivote": multivote,
+        }
+        await PollModule.send_poll(poll, ctx.channel, forum)
+
+    @commands.hybrid_command(
+        name="getpolls", description="Sauvegarde les sondages dans un fichier"
+    )
+    async def getpolls(self, ctx):
+        forum = self.get_forum(ctx.guild.id)
+        await PollModule.fetch_polls(forum)
 
 
 async def setup(bot) -> None:
