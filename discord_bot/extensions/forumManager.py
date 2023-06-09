@@ -6,6 +6,7 @@ from os.path import exists
 from shutil import copyfile
 from typing import Tuple
 
+import discord
 import modules.AnnouncementModule as AnnouncementModule
 import modules.PollModule as PollModule
 from discord.ext import commands
@@ -192,7 +193,6 @@ class ForumManager(commands.Cog):
             "multivote": multivote,
         }
         PollModule.send_poll(poll, ctx.channel, forum)
-
 
 async def setup(bot) -> None:
     manager = ForumManager(bot)
