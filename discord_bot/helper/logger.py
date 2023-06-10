@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+import logging.handlers
 
 
 def setupLogger():
@@ -27,13 +28,15 @@ def setupLogger():
     # logger.addHandler(console_handler)
 
     # Add file handler
-    logging_file_name = (
-        f"logs/{datetime.now().strftime('discord%Y-%m-%d-%H-%M-%S.log')}"
-    )
-    file_handler = logging.FileHandler(
-            filename=logging_file_name, encoding="utf-8", mode="w"
+    logging_file_name = "logs/discord.log"
+    file_handler = logging.handlers.TimedRotatingFileHandler(
+            filename=logging_file_name,
+            when='midnight',
+            encoding="utf-8",
         )
     file_handler.setFormatter(formatter)
     file_handler.setLevel(level)
 
     logger.addHandler(file_handler)
+
+    logger.setLevel(logging.INFO)

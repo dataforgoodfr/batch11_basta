@@ -24,6 +24,7 @@ class RecoveringActions(commands.Cog):
 
         action = "NEW_MESSAGE"
         message_id = message.id
+        author_id = message.author.id
         content = message.system_content
         channel = message.channel
         if type(channel) == discord.Thread:
@@ -35,15 +36,19 @@ class RecoveringActions(commands.Cog):
 
         # Ajouter un filtre pour que certains id de canaux ne soient pas loggés.
 
-        logging.info(":".join([action, str(message_id), str(channel_id), str(thread_id), content]))
+        logging.info(":".join([action, str(author_id), str(message_id), str(channel_id), str(thread_id), content]))
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before: discord.Message, message_after: discord.Message):
         """
         This function is called everytime a message is edited in a channel the bot can see.
         """
+
+        # Ne marche pas dans les threads
+
         action = "EDIT_MESSAGE"
         message_id = message_after.id
+        author_id = message_after.author.id
         new_content = message_after.system_content
 
         channel = message_after.channel
@@ -54,9 +59,11 @@ class RecoveringActions(commands.Cog):
             thread_id = None
             channel_id = channel.id
 
+        print("???")
+
         # Ajouter un filtre pour que certains id de canaux ne soient pas loggés.
 
-        logging.info(":".join([action, str(message_id), str(channel_id), str(thread_id), new_content]))
+        logging.info(":".join([action, str(author_id), str(message_id), str(channel_id), str(thread_id), new_content]))
 
 
     @commands.Cog.listener()
@@ -64,8 +71,12 @@ class RecoveringActions(commands.Cog):
         """
         This function is called everytime a message is deleted in a channel the bot can see.
         """
+
+        # Ne marche pas dans les threads
+        
         action = "DELETE_MESSAGE"
         message_id = message.id
+        author_id = message.author.id
         content = message.system_content
 
         channel = message.channel
@@ -78,7 +89,7 @@ class RecoveringActions(commands.Cog):
 
         # Ajouter un filtre pour que certains id de canaux ne soient pas loggés.
 
-        logging.info(":".join([action, str(message_id), str(channel_id), str(thread_id), content]))
+        logging.info(":".join([action, str(author_id), str(message_id), str(channel_id), str(thread_id), content]))
         
         
 
