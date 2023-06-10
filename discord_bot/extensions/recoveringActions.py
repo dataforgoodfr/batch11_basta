@@ -34,7 +34,11 @@ class RecoveringActions(commands.Cog):
             thread_id = None
             channel_id = channel.id
 
-        # Ajouter un filtre pour que certains id de canaux ne soient pas loggés.
+        config = self.bot.get_cog("ForumManager").get_forum(message.guild.id).config
+        moderation_alert_channel_id = config["MODERATION"]["MODERATION_ALERTS_CHANNEL"]
+
+        if channel_id in [moderation_alert_channel_id]:
+            return
 
         logging.info(":".join([action, str(author_id), str(message_id), str(channel_id), str(thread_id), content]))
 
@@ -59,9 +63,11 @@ class RecoveringActions(commands.Cog):
             thread_id = None
             channel_id = channel.id
 
-        print("???")
+        config = self.bot.get_cog("ForumManager").get_forum(message_after.guild.id).config
+        moderation_alert_channel_id = config["MODERATION"]["MODERATION_ALERTS_CHANNEL"]
 
-        # Ajouter un filtre pour que certains id de canaux ne soient pas loggés.
+        if channel_id in [moderation_alert_channel_id]:
+            return
 
         logging.info(":".join([action, str(author_id), str(message_id), str(channel_id), str(thread_id), new_content]))
 
@@ -73,7 +79,7 @@ class RecoveringActions(commands.Cog):
         """
 
         # Ne marche pas dans les threads
-        
+
         action = "DELETE_MESSAGE"
         message_id = message.id
         author_id = message.author.id
@@ -86,8 +92,12 @@ class RecoveringActions(commands.Cog):
         else:
             thread_id = None
             channel_id = channel.id
+        
+        config = self.bot.get_cog("ForumManager").get_forum(message.guild.id).config
+        moderation_alert_channel_id = config["MODERATION"]["MODERATION_ALERTS_CHANNEL"]
 
-        # Ajouter un filtre pour que certains id de canaux ne soient pas loggés.
+        if channel_id in [moderation_alert_channel_id]:
+            return
 
         logging.info(":".join([action, str(author_id), str(message_id), str(channel_id), str(thread_id), content]))
         
