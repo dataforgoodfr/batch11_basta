@@ -38,6 +38,7 @@ extensions = (
     "extensions.forumManager",
     "extensions.schedulerManager",
     "extensions.moderation",
+    "extensions.recoveringActions",
 )
 
 # Setup Logging
