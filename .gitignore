@@ -191,3 +191,6 @@ discord_bot/configurations/*
 # Exclude data files unless they the documentation
 discord_bot/data/*
 !discord_bot/data/data*
+
+# Exclude report files
+discord_bot/reports/*

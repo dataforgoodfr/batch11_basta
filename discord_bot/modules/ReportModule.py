@@ -2,6 +2,7 @@
 Module qui servira à faire les rapports en fin de journée ou de forum
 """
 import logging
+import os
 
 
 async def generate_daily_report(forum) -> None:
@@ -44,8 +45,14 @@ async def generate_forum_report(forum) -> None:
     # sort messages by date
     messages.sort(key=lambda x: x.created_at)
 
+    file_name = "messages_report.txt"
+
+    # if the report folder doesn't exist, create it
+    if not os.path.exists("reports"):
+        os.makedirs("reports")
+
     # write messages in a file
-    with open("forum_report.txt", "w", encoding="utf-8") as f:
+    with open(f"reports/{file_name}", "w", encoding="utf-8") as f:
         for message in messages:
             try:
                 # write in utf-8
