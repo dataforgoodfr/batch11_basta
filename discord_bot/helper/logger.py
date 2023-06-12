@@ -1,7 +1,6 @@
 import logging
-import os
-from datetime import datetime
 import logging.handlers
+import os
 
 
 def setupLogger():
@@ -13,7 +12,7 @@ def setupLogger():
     logger = logging.getLogger()
 
     # format log messages
-    formatter = logging.Formatter('%(levelname)s:%(message)s')
+    formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(message)s")
 
     # logging level
     level = logging.INFO
@@ -30,10 +29,10 @@ def setupLogger():
     # Add file handler
     logging_file_name = "logs/discord.log"
     file_handler = logging.handlers.TimedRotatingFileHandler(
-            filename=logging_file_name,
-            when='midnight',
-            encoding="utf-8",
-        )
+        filename=logging_file_name,
+        when="midnight",
+        encoding="utf-8",
+    )
     file_handler.setFormatter(formatter)
     file_handler.setLevel(level)
 
