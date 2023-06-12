@@ -27,7 +27,6 @@ de deux manières différentes, chaque scénario propose un pattern unique :
 TODO :
 - Utiliser les listener raw pour récupérer les messages édités et supprimés
 qui ne sont pas dans le cache
-- Faire une fonction dans ReportModules pour récupérer tous les messages
 """
 
 
