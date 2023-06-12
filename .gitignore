@@ -188,5 +188,6 @@ discord_bot/logs/*
 discord_bot/configurations/*
 !discord_bot/configurations/template*
 
-# Exclude data files
+# Exclude data files unless they the documentation
 discord_bot/data/*
+!discord_bot/data/data*
