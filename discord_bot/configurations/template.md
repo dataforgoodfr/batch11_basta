@@ -22,3 +22,6 @@ Je n'ai pas trouvé d'outil permettant de recenser les champs d'un fichier JSON 
 - `MODERATION` (dict) : Configuration de l'extension moderation
   - `MODERATION_ALERTS_CHANNEL` (int) : ID du channel sur lequel envoyer les alertes de modération
   - `REPORT_EMOJI` (str) : ID de l'emoji devant être utilisé pour signaler un message
+- `ROLE_MANAGER` (dict) : Configuration de l'extension RoleManager
+  - `RULE_MESSAGE_ID` (int) : ID du message auquel il faut réagir pour obtenir le rôle permettant l'accès au serveur
+  - `BASE_ROLE_ID` (int) : ID du rôle permettant l'accès au serveur

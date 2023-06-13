@@ -46,5 +46,10 @@
     "MODERATION": {
         "MODERATION_ALERTS_CHANNEL": -1,
         "REPORT_EMOJI": null
+    },
+
+    "ROLE_MANAGER": {
+        "RULE_MESSAGE_ID": -1,
+        "BASE_ROLE_ID": -1
     }
 }
