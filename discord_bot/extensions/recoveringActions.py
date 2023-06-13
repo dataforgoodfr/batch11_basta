@@ -49,20 +49,6 @@ class RecoveringActions(commands.Cog):
         content = message.system_content
         channel_id = message.channel.id
 
-        # Bout de code commenté car obsolète
-        # Raison : On veut logger tous les messages/actions,
-        # la modération se fera à la génération de la synthèse
-
-        # config = (
-        #     self.bot.get_cog("ForumManager").get_forum(message.guild.id).config
-        # )
-        # moderation_alert_channel_id = config["MODERATION"][
-        #     "MODERATION_ALERTS_CHANNEL"
-        # ]
-
-        # if channel_id in [moderation_alert_channel_id]:
-        #     return
-
         logging.info(
             ":".join(
                 [
@@ -107,8 +93,6 @@ class RecoveringActions(commands.Cog):
         in a channel the bot can see.
         """
 
-        # Ne marche pas dans les threads
-
         action = "DELETE_MESSAGE"
         message_id = payload.message_id
         message = payload.cached_message
@@ -117,16 +101,6 @@ class RecoveringActions(commands.Cog):
         else:
             author_id = None
         channel_id = payload.channel_id
-
-        # config = (
-        #     self.bot.get_cog("ForumManager").get_forum(message.guild.id).config
-        # )
-        # moderation_alert_channel_id = config["MODERATION"][
-        #     "MODERATION_ALERTS_CHANNEL"
-        # ]
-
-        # if channel_id in [moderation_alert_channel_id]:
-        #     return
 
         logging.info(
             ":".join(
