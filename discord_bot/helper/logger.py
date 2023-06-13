@@ -16,15 +16,13 @@ def setupLogger():
 
     # logging level
     level = logging.INFO
-    logger.setLevel(logging.INFO)
+    level_warning = logging.WARNING
 
     # Add stream handler (the console)
-    # Déjà récupéré par un autre moyen
-    # console_handler = logging.StreamHandler()
-    # console_handler.setFormatter(formatter)
-    # console_handler.setLevel(level)
-
-    # logger.addHandler(console_handler)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    console_handler.setLevel(level_warning)
+    logger.addHandler(console_handler)
 
     # Add file handler
     logging_file_name = "logs/discord.log"

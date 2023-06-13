@@ -72,4 +72,4 @@ async def sync(ctx):
 
 # Always better if run at the end
 # root_logger=True allow to run the python logger, not the one from discord.py
-bot.run(BOT_TOKEN, root_logger=True)
+bot.run(BOT_TOKEN, root_logger=False)
