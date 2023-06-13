@@ -164,6 +164,9 @@ class privateChannels(commands.Cog):
         forum = interaction.client.get_cog("ForumManager").get_forum(guild.id)
         data = forum.get_data("privateChannels")
 
+        if data == None:
+            data = {}
+
         if "channels" in data.keys() and str(user.id) in data["channels"].keys():
             channel = guild.get_channel(data["channels"][str(user.id)])
             await channel.send(content=f"⚠️ Tu ne peux posséder qu'un seul canal privé, {user.mention}.", delete_after=20)
