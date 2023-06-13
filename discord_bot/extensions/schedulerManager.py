@@ -14,7 +14,7 @@ __all__ = ["SchedulerManager"]
 
 UTC = datetime.timezone.utc
 
-is_accelerated = True
+is_accelerated = False
 
 
 class Scheduler:
