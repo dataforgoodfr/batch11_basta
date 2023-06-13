@@ -70,67 +70,68 @@ async def send_poll(poll: dict, channel, forum) -> int:
 
 async def fetch_polls(forum) -> None:
     data_polls = forum.get_data("polls")
-    bot = forum.bot
+    if type(data_polls) is dict:
+        bot = forum.bot
 
-    polls = []
+        polls = []
 
-    for message_id, channel_id in data_polls.items():
-        # get the message object from the channel
-        channel = bot.get_channel(channel_id)
-        poll_message = await channel.fetch_message(message_id)
+        for message_id, channel_id in data_polls.items():
+            # get the message object from the channel
+            channel = bot.get_channel(channel_id)
+            poll_message = await channel.fetch_message(message_id)
 
-        embed = poll_message.embeds[0]
+            embed = poll_message.embeds[0]
 
-        # On retire la dernière phrase du titre
-        title = "\n".join(embed.title.split("\n")[:-1])
+            # On retire la dernière phrase du titre
+            title = "\n".join(embed.title.split("\n")[:-1])
 
-        splitted_description = embed.description.split("\n")
-        splitted_description = [x.strip() for x in splitted_description]
-        if splitted_description[0][:3] == "1️⃣":
-            # Liste à nombre
-            opt_dict = {
-                reaction[:3]: reaction[3:].strip()
-                for reaction in splitted_description[:9]
+            splitted_description = embed.description.split("\n")
+            splitted_description = [x.strip() for x in splitted_description]
+            if splitted_description[0][:3] == "1️⃣":
+                # Liste à nombre
+                opt_dict = {
+                    reaction[:3]: reaction[3:].strip()
+                    for reaction in splitted_description[:9]
+                }
+                if len(splitted_description) == 10:
+                    # If there is a tenth option, split it differently
+                    # (because it works that way 🤷)
+                    opt_dict["🔟"] = splitted_description[9][2:].strip()
+            else:
+                # yes/no
+                opt_dict = {
+                    reaction[:1]: reaction[2:].strip()
+                    for reaction in splitted_description
+                }
+
+            voters = [
+                bot.user.id
+            ]  # add the bot's ID to the list of voters to exclude it's votes
+
+            tally = {x: 0 for x in opt_dict.keys()}
+            for reaction in poll_message.reactions:
+                if reaction.emoji in opt_dict.keys():
+                    reactors = [user async for user in reaction.users()]
+                    for reactor in reactors:
+                        if reactor.id not in voters:
+                            tally[reaction.emoji] += 1
+
+            poll = {
+                "title": title,
+                "description": embed.description,
+                "tally": tally,
+                "opt_dict": opt_dict,
             }
-            if len(splitted_description) == 10:
-                # If there is a tenth option, split it differently
-                # (because it works that way 🤷)
-                opt_dict["🔟"] = splitted_description[9][2:].strip()
-        else:
-            # yes/no
-            opt_dict = {
-                reaction[:1]: reaction[2:].strip()
-                for reaction in splitted_description
-            }
+            polls.append(poll)
 
-        voters = [
-            bot.user.id
-        ]  # add the bot's ID to the list of voters to exclude it's votes
-
-        tally = {x: 0 for x in opt_dict.keys()}
-        for reaction in poll_message.reactions:
-            if reaction.emoji in opt_dict.keys():
-                reactors = [user async for user in reaction.users()]
-                for reactor in reactors:
-                    if reactor.id not in voters:
-                        tally[reaction.emoji] += 1
-
-        poll = {
-            "title": title,
-            "description": embed.description,
-            "tally": tally,
-            "opt_dict": opt_dict,
-        }
-        polls.append(poll)
-
-        output = f"Results of the poll for '{title}':\n" + "\n".join(
-            [
-                "{}: {}".format(opt_dict[key], tally[key])
-                for key in tally.keys()
-            ]
-        )
-        logging.info("Logged poll results :\n" + output)
-    forum.save_data("poll_results", polls)
+            output = f"Results of the poll for '{title}':\n" + "\n".join(
+                [
+                    "{}: {}".format(opt_dict[key], tally[key])
+                    for key in tally.keys()
+                ]
+            )
+            logging.info("Logged poll results :\n" + output)
+        forum.save_data("poll_results", polls)
 
 
 def save_poll(forum, message) -> None:
@@ -155,7 +156,10 @@ def is_multivote_allowed(reaction) -> bool:
 
 def is_poll(forum, reaction) -> bool:
     data_polls = forum.get_data("polls")
-    return reaction.message.id in data_polls.keys()
+    if type(data_polls) is not dict:
+        return False
+    else:
+        return reaction.message.id in data_polls.keys()
 
 
 async def checkReaction(user_reaction, user, forum):
