@@ -34,7 +34,7 @@ class RoleManager(commands.Cog):
                 base_role = guild.get_role(config["ROLE_MANAGER"]["BASE_ROLE_ID"])
                 # Le payload renvoyé par 'on_raw_reaction_remove()' ne contient pas de champ payload.member.
                 # Il est donc nécessaire de le récupérer à la main, via l'ID de l'utilisateur.
-                member = guild.get_member(162227524498096128)
+                member = guild.get_member(payload.user_id)
                 if base_role in member.roles:
                     await member.remove_roles(base_role)
 
