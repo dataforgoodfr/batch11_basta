@@ -23,15 +23,11 @@ async def generate_forum_report(forum) -> None:
 
     # If there are channel we're not supposed to log, remove them
     not_log_channels = forum.get_data("not_log_channels")
-
-    if not_log_channels != {}:
+    if type(not_log_channels) is list:
         channels = [
             channel
             for channel in channels
-            if (
-                str(channel.id) not in not_log_channels
-                and channel.id not in not_log_channels
-            )
+            if channel.id not in not_log_channels
         ]
 
     # fetch all messages
