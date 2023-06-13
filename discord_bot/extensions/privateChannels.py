@@ -7,7 +7,6 @@ __all__ = ["privateChannels"]
 
 # CONFIGURATION
 ADMIN_ROLE_ID = 1100893370248876092
-CURRENT_DAY = 3 # Temporaire
 
 @dataclass
 class privateChannels(commands.Cog):
@@ -65,8 +64,9 @@ class privateChannels(commands.Cog):
         # Ainsi, le slow mode est général et pas seulement propre à un seul message avec des boutons.
         slow_mode = {}
 
-        def __init__(self):
+        def __init__(self, day: int):
             super().__init__(timeout=None)
+            self.day = day
 
         @staticmethod
         async def get_messages(author, history):
@@ -89,17 +89,17 @@ class privateChannels(commands.Cog):
                 await interaction.response.send_message("Vous ne pouvez faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
                 return
             
-            await interaction.response.defer()
             message_list = await self.get_messages(interaction.user, interaction.channel.history(limit=100))
 
             forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
             config = forum.config
-            ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][0]["ANO_ANSWERS"] #TODO: get current_day
+            ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"] #TODO: get day related to button
             channel = interaction.guild.get_channel(ano_answers)
 
             for message in message_list:
                 await channel.send(message.content)
 
+            await interaction.response.defer()
             self.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
 
     class ConfirmCloseButton(discord.ui.View):
@@ -123,15 +123,19 @@ class privateChannels(commands.Cog):
                 # Les boutons correspondant à des jours non ouverts sont désactivés.
             
             async def callback(self, interaction: discord.Interaction):
-                await interaction.channel.send(embed=privateChannels.embed_share(int(self.custom_id)-1), view=privateChannels.ConfirmShareButton())
+                await interaction.channel.send(embed=privateChannels.embed_share(int(self.custom_id)-1), view=privateChannels.ConfirmShareButton(day=int(self.custom_id)-2))
                 await interaction.response.defer()
 
         class RefreshButton(discord.ui.Button):
-            def __init__(self, label, style, custom_id, disabled):
+            def __init__(self, label, style, custom_id, disabled, bot):
                 super().__init__(label=label, style=style, custom_id=custom_id, disabled=disabled)
+                self.bot = bot
 
             async def callback(self, interaction: discord.Interaction):
-                await interaction.message.edit(view=privateChannels.ShareButtons(current_day=5)) #TODO: current day
+                forum = self.bot.get_cog("ForumManager").get_forum(interaction.guild.id) # WARNING: BROKEN
+                config = forum.config
+                current_day = config["GENERAL"]["CURRENT_DAY"]
+                await interaction.message.edit(view=privateChannels.ShareButtons(bot=self.bot, current_day=current_day))
                 await interaction.response.defer()
 
         class CloseButton(discord.ui.Button):
@@ -142,14 +146,14 @@ class privateChannels(commands.Cog):
                 await interaction.response.send_message(embed=privateChannels.embed_close(), view=privateChannels.ConfirmCloseButton(), delete_after=120)
 
         # La view crée 5 boutons "Jour 1", "Jour 2" etc. à l'initialisation.
-        def __init__(self, current_day=3):
+        def __init__(self, bot, current_day=-1):
             super().__init__(timeout=None)
             for i in range(5):
                 # Le décorateur utilisée dans la sous-classe PrivateChannelButton crée et ajoute automatiquement
                 # le bouton à la view. Dans notre cas, vu que l'on déclare nous-même les objects ShareButton, il
                 # est nécessaire de les ajouter manuellement à notre view.
-                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i+1 > current_day)))
-            self.add_item(self.RefreshButton(label="🔄", style=discord.ButtonStyle.secondary, custom_id="101", disabled=False))
+                self.add_item(self.ShareButton(label=f"Jour {i+1}", style=discord.ButtonStyle.primary, custom_id=f"{i+2}", disabled=(i > current_day)))
+            self.add_item(self.RefreshButton(label="🔄", style=discord.ButtonStyle.secondary, custom_id="101", disabled=False, bot=bot))
             # self.add_item(self.CloseButton(label="Fermer le canal", style=discord.ButtonStyle.danger, custom_id="102", disabled=False))
 
     # UTILS
@@ -181,8 +185,12 @@ class privateChannels(commands.Cog):
         if "counter" not in data.keys():
             data["counter"] = 0
 
+        # Jour actuel
+        config = forum.config
+        current_day = config["GENERAL"]["CURRENT_DAY"]
+
         channel = await interaction.channel.category.create_text_channel("canal privé "+"{:04d}".format(data["counter"]), overwrites=overwrites)
-        await channel.send(embed=privateChannels.embed_welcome(), view=privateChannels.ShareButtons())
+        await channel.send(embed=privateChannels.embed_welcome(), view=privateChannels.ShareButtons(bot=interaction.client, current_day=current_day))
         await channel.send(f"✅ Ton canal personnel a été créé {interaction.user.mention} !", delete_after=20)
 
         data["counter"] = data["counter"] + 1
@@ -204,6 +212,6 @@ class privateChannels(commands.Cog):
 async def setup(bot) -> None:
     await bot.add_cog(privateChannels(bot))
     bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
-    bot.add_view(privateChannels.ShareButtons()) # Persistance des boutons de partage des jours
-    bot.add_view(privateChannels.ConfirmShareButton())
+    bot.add_view(privateChannels.ShareButtons(bot=bot)) # Persistance des boutons de partage des jours
+    bot.add_view(privateChannels.ConfirmShareButton(day=0))
     bot.add_view(privateChannels.ConfirmCloseButton())
