@@ -86,7 +86,7 @@ class Forum:
             json.dump(self.data, data_file, indent=4)
 
     def get_data(self, key):
-        return self.data[key] if key in self.data.keys() else {}
+        return self.data[key] if key in self.data.keys() else None
 
     # Allow user @everyone to send messages in the channels
     async def open_time_limited_channels(self):
