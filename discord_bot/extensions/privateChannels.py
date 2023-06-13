@@ -164,7 +164,6 @@ class privateChannels(commands.Cog):
 
         guild = interaction.guild # La 'guild' est la dénomination de discordpy pour représenter un serveur discord
         user = interaction.user # La personne qui demande la création d'un canal privé
-        admin = guild.get_role(ADMIN_ROLE_ID)
 
         forum = interaction.client.get_cog("ForumManager").get_forum(guild.id)
         data = forum.get_data("privateChannels")
@@ -176,6 +175,9 @@ class privateChannels(commands.Cog):
             channel = guild.get_channel(data["channels"][str(user.id)])
             await channel.send(content=f"⚠️ Tu ne peux posséder qu'un seul canal privé, {user.mention}.", delete_after=20)
             return
+        
+        config = forum.config
+        admin = config["PRIVATE_CHANNELS"]["ADMIN_ROLE_ID"]
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -187,7 +189,6 @@ class privateChannels(commands.Cog):
             data["counter"] = 0
 
         # Jour actuel
-        config = forum.config
         current_day = config["GENERAL"]["CURRENT_DAY"]
 
         channel = await interaction.channel.category.create_text_channel("canal privé "+"{:04d}".format(data["counter"]), overwrites=overwrites)
@@ -204,7 +205,14 @@ class privateChannels(commands.Cog):
     # COMMANDS
 
     @commands.hybrid_command()
-    async def generateprivatechannelmessage(self, ctx):
+    async def generateprivatechannelmessage(self, ctx: commands.Context):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
         embed = privateChannels.embed_privateChannelMessage()
         view = privateChannels.PrivateChannelButton()
         await ctx.send(embed=embed, view=view)

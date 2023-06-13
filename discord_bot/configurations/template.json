@@ -40,6 +40,7 @@
         ]
     },
     "PRIVATE_CHANNELS": {
+        "ADMIN_ROLE_ID": -1,
         "PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL": -1,
         "SHARING_COOLDOWN": 900
     },
