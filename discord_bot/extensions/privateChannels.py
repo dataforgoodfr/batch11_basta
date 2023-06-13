@@ -36,7 +36,7 @@ class privateChannels(commands.Cog):
     
     def embed_close():
         embed=discord.Embed(title="❌ Confirmer la suppression ❌ ", color=0xff0000)
-        embed.add_field(name="Êtes-vous sûr de vouloir supprimer le canal ?", value="Toute suppression est définitive et irréversible. Les messages seront perdus.", inline=False)
+        embed.add_field(name="Es-tu sûre de vouloir supprimer le canal ?", value="Toute suppression est définitive et irréversible. Les messages seront perdus.", inline=False)
         return embed
 
     # VIEWS
@@ -86,7 +86,7 @@ class privateChannels(commands.Cog):
 
             # SLOW MODE - Pour prévenir le spam dans le canal des réponses anonymes 
             if interaction.user.id in self.slow_mode.keys() and time.time() <= self.slow_mode[interaction.user.id]:
-                await interaction.response.send_message("Vous ne pouvez faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
+                await interaction.response.send_message("Tu ne peux faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
                 return
             
             message_list = await self.get_messages(interaction.user, interaction.channel.history(limit=100))
@@ -100,6 +100,7 @@ class privateChannels(commands.Cog):
                 await channel.send(message.content)
 
             await interaction.response.defer()
+            await interaction.channel.send(f"✅ Ton témoignage a été partagé, {interaction.user.mention} !", delete_after=20)
             self.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
 
     class ConfirmCloseButton(discord.ui.View):
