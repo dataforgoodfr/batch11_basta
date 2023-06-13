@@ -1,3 +1,5 @@
+#!/bin/python3
+
 import os
 
 import discord
@@ -27,7 +29,9 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 intents = discord.Intents.default()
 # Required to read users messages
 intents.message_content = True
-intents.members = True
+
+#Necessary to get a member from its id
+intents.members = True 
 
 bot = commands.Bot(command_prefix=".", intents=intents)
 
@@ -36,8 +40,11 @@ bot = commands.Bot(command_prefix=".", intents=intents)
 # /!\ WARNING: Keep an extra comma following the last extension name or it won't be loaded!
 extensions = (
     "extensions.forumManager",
+    "extensions.privateChannels",
     "extensions.schedulerManager",
     "extensions.moderation",
+    "extensions.recoveringActions",
+    "extensions.roleManager",
 )
 
 # Setup Logging
@@ -65,4 +72,4 @@ async def sync(ctx):
 
 # Always better if run at the end
 # root_logger=True allow to run the python logger, not the one from discord.py
-bot.run(BOT_TOKEN, root_logger=True)
+bot.run(BOT_TOKEN, root_logger=False)

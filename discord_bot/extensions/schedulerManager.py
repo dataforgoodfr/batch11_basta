@@ -3,8 +3,10 @@ Cette classe ne doit être instanciée qu'une et une seule fois par objet forum
 """
 
 import datetime
+import logging
 
 import modules.AnnouncementModule as AnnouncementModule
+import modules.PollModule as PollModule
 import modules.ReportModule as ReportModule
 from discord.ext import commands, tasks
 
@@ -20,22 +22,18 @@ class Scheduler:
         self.bot = bot
         self.forum = forum
 
-    def get_config(self):
-        return self.forum.config
-
     # Commence le forum
     async def start_forum(self, ctx) -> None:
         # Si forum déjà lancé, on renvoi un message d'erreur
-        if self.forum.is_running:
+        if self.forum.config["GENERAL"]["CURRENT_DAY"] != -1:
             await AnnouncementModule.send_already_started_message(
                 ctx, self.bot
             )
             return
 
         # Commence le premier jour
-        self.forum.is_running = True
-        config = self.get_config()
-        config["GENERAL"]["CHANNELS"]["DAYS"][0]["IS_CURRENT_DAY"] = True
+        config = self.forum.config
+        config["GENERAL"]["CURRENT_DAY"] = 0
 
         # Envoie un message de démarage
         await AnnouncementModule.send_start_of_forum_message(ctx, self.bot)
@@ -75,57 +73,53 @@ class Scheduler:
 
     async def next_day(self) -> None:
         # Récupère la configuration
-        config = self.get_config()
-        days_config = config["GENERAL"]["CHANNELS"]["DAYS"]
-        nb_days = len(days_config)
+        config = self.forum.config
+        nb_days = len(config["GENERAL"]["CHANNELS"]["DAYS"])
 
-        # Cherche le jour actuel
-        for i in range(nb_days):
-            if days_config[i]["IS_CURRENT_DAY"]:
-                # Jour actuel trouvé
+        jour_actuel = config["GENERAL"]["CURRENT_DAY"]
+        if jour_actuel != -1:
+            # forum commencé
 
-                # Fin de journée
-                await AnnouncementModule.send_end_of_day_message(
-                    days_config, self.bot
+            # Annonce de fin de journée et génération du rapport
+            await AnnouncementModule.send_end_of_day_message(config, self.bot)
+            await ReportModule.generate_daily_report(self.forum)
+
+            if jour_actuel < nb_days - 1:
+                # Si le jour suivant existe, on le passe
+                jour_actuel += 1
+                config["GENERAL"]["CURRENT_DAY"] = jour_actuel
+            else:
+                # Dernier jour le script de fin de journée et le report
+                await AnnouncementModule.send_end_of_forum_message(
+                    config, self.bot
                 )
-                await ReportModule.generate_daily_report()
+                await PollModule.fetch_polls(self.forum)
+                await ReportModule.generate_forum_report(self.forum)
 
-                days_config[i]["IS_CURRENT_DAY"] = False
+                # On arrête l'envoi de message et le changement de jour
+                self.message_job.cancel()
+                self.open_channels_job.cancel()
+                self.close_channels_job.cancel()
 
-                if i + 1 < nb_days:
-                    # Si le jour suivant existe, on le passe à True
-                    days_config[i + 1]["IS_CURRENT_DAY"] = True
-                else:
-                    # Dernier jour le script de fin de journée et le report
-                    await AnnouncementModule.send_end_of_forum_message(
-                        days_config, self.bot
-                    )
-                    await ReportModule.generate_forum_report()
-
-                    # On arrête l'envoi de message et le changement de jour
-                    self.message_job.cancel()
-
-                    # On arrête le forum
-                    self.forum.is_running = False
-                break
+                # On arrête le forum
+                config["GENERAL"]["CURRENT_DAY"] = -1
+        else:
+            logging.warning("Le forum n'a pas encore commencé")
 
         # Met à jour la config
-        self.forum.set_days_config(days_config)
+        self.forum.set_config(config)
 
     @tasks.loop()
     async def message_job(self) -> None:
         # Skip the first occurrence (whent starting the forum)
         if self.message_job.current_loop == 0:
             return
-        # Récupère la configuration
-        config = self.get_config()
         # Envoie le message suivant
-        days_config = await AnnouncementModule.send_next_message(
-            config["GENERAL"]["CHANNELS"]["DAYS"],
-            self.bot,
+        config = await AnnouncementModule.send_next_message(
+            self.bot, self.forum
         )
         # Met à jour la config
-        self.forum.set_days_config(days_config)
+        self.forum.set_config(config)
 
     @tasks.loop()
     async def open_channels_job(self) -> None:
@@ -161,6 +155,13 @@ class SchedulerManager(commands.Cog):
         description="Lance le forum ainsi avec les configurations chargées",
     )
     async def start_forum(self, ctx: commands.Context) -> None:
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
         # Get the scheduler associated with the server
         forum = self.get_forum(ctx.guild.id)
         scheduler = forum.scheduler
@@ -182,6 +183,18 @@ class SchedulerManager(commands.Cog):
         if ctx.author.guild_permissions.administrator:
             forum = self.get_forum(ctx.guild.id)
             await forum.close_time_limited_channels()
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="generate_end_report")
+    async def generate_end_report(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            await ReportModule.generate_forum_report(
+                self.get_forum(ctx.guild.id)
+            )
         else:
             await ctx.reply(
                 "Vous n'avez pas le droit d'utiliser cette commande.",
