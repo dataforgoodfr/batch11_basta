@@ -47,13 +47,7 @@ class RecoveringActions(commands.Cog):
         message_id = message.id
         author_id = message.author.id
         content = message.system_content
-        channel = message.channel
-        if type(channel) == discord.Thread:
-            thread_id = channel.id
-            channel_id = channel.parent.id
-        else:
-            thread_id = None
-            channel_id = channel.id
+        channel_id = message.channel.id
 
         # Bout de code commenté car obsolète
         # Raison : On veut logger tous les messages/actions,
@@ -76,47 +70,23 @@ class RecoveringActions(commands.Cog):
                     str(author_id),
                     str(message_id),
                     str(channel_id),
-                    str(thread_id),
                     content,
                 ]
             )
         )
 
     @commands.Cog.listener()
-    async def on_message_edit(
-        self, message_before: discord.Message, message_after: discord.Message
-    ):
+    async def on_raw_message_edit(self, payload: discord.RawMessageUpdateEvent):
         """
         This function is called everytime a message is edited
         in a channel the bot can see.
         """
 
-        # Ne marche pas dans les threads
-
         action = "EDIT_MESSAGE"
-        message_id = message_after.id
-        author_id = message_after.author.id
-        new_content = message_after.system_content
-
-        channel = message_after.channel
-        if type(channel) == discord.Thread:
-            thread_id = channel.id
-            channel_id = channel.parent.id
-        else:
-            thread_id = None
-            channel_id = channel.id
-
-        config = (
-            self.bot.get_cog("ForumManager")
-            .get_forum(message_after.guild.id)
-            .config
-        )
-        moderation_alert_channel_id = config["MODERATION"][
-            "MODERATION_ALERTS_CHANNEL"
-        ]
-
-        if channel_id in [moderation_alert_channel_id]:
-            return
+        message_id = payload.message_id
+        author_id = payload.data["author"]["id"]
+        channel_id = payload.data["channel_id"]
+        new_content = payload.data["content"]
 
         logging.info(
             ":".join(
@@ -125,14 +95,13 @@ class RecoveringActions(commands.Cog):
                     str(author_id),
                     str(message_id),
                     str(channel_id),
-                    str(thread_id),
                     new_content,
                 ]
             )
         )
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message: discord.Message):
+    async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
         """
         This function is called everytime a message is deleted
         in a channel the bot can see.
@@ -141,27 +110,23 @@ class RecoveringActions(commands.Cog):
         # Ne marche pas dans les threads
 
         action = "DELETE_MESSAGE"
-        message_id = message.id
-        author_id = message.author.id
-        content = message.system_content
-
-        channel = message.channel
-        if type(channel) == discord.Thread:
-            thread_id = channel.id
-            channel_id = channel.parent.id
+        message_id = payload.message_id
+        message = payload.cached_message
+        if message != None:
+            author_id = message.author.id
         else:
-            thread_id = None
-            channel_id = channel.id
+            author_id = None
+        channel_id = payload.channel_id
 
-        config = (
-            self.bot.get_cog("ForumManager").get_forum(message.guild.id).config
-        )
-        moderation_alert_channel_id = config["MODERATION"][
-            "MODERATION_ALERTS_CHANNEL"
-        ]
+        # config = (
+        #     self.bot.get_cog("ForumManager").get_forum(message.guild.id).config
+        # )
+        # moderation_alert_channel_id = config["MODERATION"][
+        #     "MODERATION_ALERTS_CHANNEL"
+        # ]
 
-        if channel_id in [moderation_alert_channel_id]:
-            return
+        # if channel_id in [moderation_alert_channel_id]:
+        #     return
 
         logging.info(
             ":".join(
@@ -170,8 +135,6 @@ class RecoveringActions(commands.Cog):
                     str(author_id),
                     str(message_id),
                     str(channel_id),
-                    str(thread_id),
-                    content,
                 ]
             )
         )
