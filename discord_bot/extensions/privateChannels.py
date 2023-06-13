@@ -74,7 +74,7 @@ class privateChannels(commands.Cog):
             message_list = []
             async for message in history:
                 if message.author == author:
-                    for reaction in message.reactions: # TODO: optimisation
+                    for reaction in message.reactions:
                         if reaction.emoji == "✅" and author in [user async for user in reaction.users()]:
                             message_list.append(message)
                             break
@@ -93,7 +93,7 @@ class privateChannels(commands.Cog):
 
             forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
             config = forum.config
-            ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"] #TODO: get day related to button
+            ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"]
             channel = interaction.guild.get_channel(ano_answers)
 
             for message in message_list:
