@@ -82,7 +82,7 @@ class Scheduler:
 
             # Annonce de fin de journée et génération du rapport
             await AnnouncementModule.send_end_of_day_message(config, self.bot)
-            await ReportModule.generate_daily_report()
+            await ReportModule.generate_daily_report(self.forum)
 
             if jour_actuel < nb_days - 1:
                 # Si le jour suivant existe, on le passe
@@ -94,7 +94,7 @@ class Scheduler:
                     config, self.bot
                 )
                 await PollModule.fetch_polls(self.forum)
-                await ReportModule.generate_forum_report()
+                await ReportModule.generate_forum_report(self.forum)
 
                 # On arrête l'envoi de message et le changement de jour
                 self.message_job.cancel()
@@ -183,6 +183,18 @@ class SchedulerManager(commands.Cog):
         if ctx.author.guild_permissions.administrator:
             forum = self.get_forum(ctx.guild.id)
             await forum.close_time_limited_channels()
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="generate_end_report")
+    async def generate_end_report(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            await ReportModule.generate_forum_report(
+                self.get_forum(ctx.guild.id)
+            )
         else:
             await ctx.reply(
                 "Vous n'avez pas le droit d'utiliser cette commande.",

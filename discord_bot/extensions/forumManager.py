@@ -206,9 +206,9 @@ class ForumManager(commands.Cog):
         await PollModule.send_poll(poll, ctx.channel, forum)
 
     @commands.hybrid_command(
-        name="getpolls", description="Sauvegarde les sondages dans un fichier"
+        name="get_polls", description="Sauvegarde les sondages dans un fichier"
     )
-    async def getpolls(self, ctx):
+    async def get_polls(self, ctx):
         if not ctx.message.author.guild_permissions.administrator:
             await ctx.interaction.response.send_message(
                 "Vous n'avez pas le droit d'utiliser cette commande.",
