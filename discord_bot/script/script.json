@@ -1,1 +1,94 @@
-[]
+[
+    [
+        {
+            "message": "**Pour lancer cette discussion, j’aimerais que tu postes le gif qui représente le mieux ton expérience d’étudiante ! Tu peux ajouter un # pour expliciter un peu ton choix. Merci !**\n\nTon expérience d’étudiante est-elle ce à quoi tu t’attendais ?\n\nTrouves-tu qu’il y a des groupes qui sont moins intégrés / moins écoutés / moins respectés  dans ton école ? Si oui, lesquels ?",
+            "polls": [
+                {
+                    "question": "Globalement, quelle note sur 10 donnerais-tu à ton expérience d’étudiante ?",
+                    "options": [
+                        "vert",
+                        "bleu",
+                        "rouge",
+                        "jaune"
+                    ],
+                    "multivote": true
+                }
+            ]
+        },
+        {
+            "message": "**As-tu en tête des anecdotes sur des moments où tu t’es sentie super bien / moins bien intégrée ?\nEst-ce qu’il y a des circonstances dans lesquelles les femmes ont plus de mal à trouver leur place dans l’école ?**\n\nLes femmes font-elles l’objet de stéréotypes ? Si oui, quels sont ceux qui t’énervent le plus ?",
+            "polls": []
+        },
+        {
+            "message": "**On ne peut pas faire l’impasse sur la journée d’intégration ou le bizutage…\nEst-ce quelque chose qui était source d’appréhension pour toi ? Si oui, pourquoi ?\nQui a participé ? Et quelles ont été les impressions ?**\n\nEnfin, la vie associative au sein de l’école aide-t-elle à s’intégrer ? Tous les témoignages sont les bienvenus !",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day1sentence0",
+            "polls": []
+        },
+        {
+            "message": "day1sentence1",
+            "polls": [
+                {
+                    "question": "Quelles couleurs aimes-tu ?",
+                    "options": [
+                        "vert",
+                        "bleu",
+                        "rouge",
+                        "jaune"
+                    ],
+                    "multivote": true
+                }
+            ]
+        },
+        {
+            "message": "day1sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day2sentence0",
+            "polls": []
+        },
+        {
+            "message": "day2sentence1",
+            "polls": []
+        },
+        {
+            "message": "day2sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day3sentence0",
+            "polls": []
+        },
+        {
+            "message": "day3sentence1",
+            "polls": []
+        },
+        {
+            "message": "day3sentence2",
+            "polls": []
+        }
+    ],
+    [
+        {
+            "message": "day4sentence0",
+            "polls": []
+        },
+        {
+            "message": "day4sentence1",
+            "polls": []
+        },
+        {
+            "message": "day4sentence2",
+            "polls": []
+        }
+    ]
+]
