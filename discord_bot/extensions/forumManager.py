@@ -65,6 +65,11 @@ class Forum:
         with open(self.config_filename, "w") as config_file:
             json.dump(config, config_file, indent=4)
 
+    def reload_config(self):
+        with open(self.config_filename) as config_file:
+            config = json.load(config_file)
+        self.config = config
+
     def find_data(server_id: int) -> Tuple[dict, str]:
         data_filename = "./data/" + str(server_id) + ".json"
 
@@ -165,7 +170,7 @@ class ForumManager(commands.Cog):
             return
         if ctx.guild.id in self.ACTIVE_FORUMS.keys():
             forum = self.ACTIVE_FORUMS[ctx.guild.id]
-            forum.load_config()
+            forum.reload_config()
             await ctx.send("Done!", delete_after=5)
         else:
             await ctx.send(
