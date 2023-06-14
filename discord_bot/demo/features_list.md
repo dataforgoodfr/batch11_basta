@@ -9,10 +9,10 @@
 - 3. On créé un environnement de développement à partir du requirements.txt
 - 4. Dans l'environnement, on lance le bot à partir de la commande `python bot.py`
 - 5. On ouvre le fichier de configuration et on rempli les champs suivants (voir documentation)
-  - 1. [ ] Les différents jours avec CHANNEL_ID avec la valeur, et QUESTION_NO et ANO_ANSWERS à -1
-  - 2. [ ] Les différentes heures d'ouverture et fermetures si besoin + d'envoi de message
-  - 3. [ ] Les channels qui sont censés être ouverts et fermés automatiquement
-  - 4. [ ] D'autres ? (**Arthus pour les channels privés et la modération**)
+  - 1. Les différents jours avec CHANNEL_ID avec la valeur, et QUESTION_NO et ANO_ANSWERS à -1
+  - 2. Les différentes heures d'ouverture et fermetures si besoin + d'envoi de message
+  - 3. Les channels qui sont censés être ouverts et fermés automatiquement
+  - 4. D'autres ? (**Arthus pour les channels privés et la modération**)
 - 6. On rempli le script en suivant les instructions dans la documentation. Ajouter des sondages automatiques dans le script.
 - 7. On lance le forum avec l'option associée
 - 8. On recommence à créer des comptes utilisatrices et à se connecter sur le serveur de démo
