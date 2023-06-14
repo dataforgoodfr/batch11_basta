@@ -22,7 +22,9 @@ class Scheduler:
         self.bot = bot
         self.forum = forum
 
-    # Commence le forum
+    # Passe au premier jour
+    # Annonce le premier jour
+    # Lance les tâches à répétition (ouverture, messages, fermeture)
     async def start_forum(self, ctx) -> None:
         # Si forum déjà lancé, on renvoi un message d'erreur
         if self.forum.config["GENERAL"]["CURRENT_DAY"] != -1:
@@ -71,6 +73,9 @@ class Scheduler:
             self.close_channels_job.change_interval(time=close_channels_time)
         self.close_channels_job.start()
 
+    # Envoi un message de fin de journée
+    # Genère le rapport de la journée
+    # Passe à la journée suivante ou fini le forum
     async def next_day(self) -> None:
         # Récupère la configuration
         config = self.forum.config
@@ -89,30 +94,37 @@ class Scheduler:
                 jour_actuel += 1
                 config["GENERAL"]["CURRENT_DAY"] = jour_actuel
             else:
-                # Dernier jour le script de fin de journée et le report
-                await AnnouncementModule.send_end_of_forum_message(
-                    config, self.bot
-                )
-                await PollModule.fetch_polls(self.forum)
-                await ReportModule.generate_forum_report(self.forum)
-
-                # On arrête l'envoi de message et le changement de jour
-                self.message_job.cancel()
-                self.open_channels_job.cancel()
-                self.close_channels_job.cancel()
-
-                # On arrête le forum
-                config["GENERAL"]["CURRENT_DAY"] = -1
+                self.end_forum()
         else:
             logging.warning("Le forum n'a pas encore commencé")
 
         # Met à jour la config
         self.forum.set_config(config)
 
+    # Envoi un message de fin de forum
+    # Récupère tous les sondages
+    # Génère le rapport final
+    async def end_forum(self) -> None:
+        # Dernier jour le script de fin de journée et le report
+        await AnnouncementModule.send_end_of_forum_message(
+            self.forum.config, self.bot
+        )
+        await PollModule.fetch_polls(self.forum)
+        await ReportModule.generate_forum_report(self.forum)
+
+        # On arrête l'envoi de message et le changement de jour
+        self.message_job.cancel()
+        self.open_channels_job.cancel()
+        self.close_channels_job.cancel()
+
+        # On arrête le forum
+        self.forum.config["GENERAL"]["CURRENT_DAY"] = -1
+
+    # Tâches à répétition : envoi le message suivant
     @tasks.loop()
-    async def message_job(self) -> None:
-        # Skip the first occurrence (whent starting the forum)
-        if self.message_job.current_loop == 0:
+    async def message_job(self, manually=False) -> None:
+        # Skip the first occurrence (if the job was started and on first loop)
+        if not manually and self.message_job.current_loop == 0:
             return
         # Envoie le message suivant
         config = await AnnouncementModule.send_next_message(
@@ -121,17 +133,19 @@ class Scheduler:
         # Met à jour la config
         self.forum.set_config(config)
 
+    # Tâches à répétition : ouvre les channels
     @tasks.loop()
-    async def open_channels_job(self) -> None:
+    async def open_channels_job(self, manually=False) -> None:
         # Skip the first occurrence (whent starting the forum)
-        if self.open_channels_job.current_loop == 0:
+        if not manually and self.open_channels_job.current_loop == 0:
             return
         await self.forum.open_time_limited_channels()
 
+    # Tâches à répétition : passe au jour suivant et ferme les channels
     @tasks.loop()
-    async def close_channels_job(self) -> None:
+    async def close_channels_job(self, manually=False) -> None:
         # Skip the first occurrence (whent starting the forum)
-        if self.close_channels_job.current_loop == 0:
+        if not manually and self.close_channels_job.current_loop == 0:
             return
         await self.next_day()
         await self.forum.close_time_limited_channels()
@@ -195,6 +209,52 @@ class SchedulerManager(commands.Cog):
             await ReportModule.generate_forum_report(
                 self.get_forum(ctx.guild.id)
             )
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="next_message")
+    async def next_message(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            await self.get_forum(ctx.guild.id).scheduler.message_job(
+                manually=True
+            )
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="end_day")
+    async def end_day(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            await self.get_forum(ctx.guild.id).scheduler.close_channels_job(
+                manually=True
+            )
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="start_day")
+    async def start_day(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            await self.get_forum(ctx.guild.id).scheduler.open_channels_job(
+                manually=True
+            )
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="end_forum")
+    async def end_forum(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            await self.get_forum(ctx.guild.id).scheduler.end_forum()
         else:
             await ctx.reply(
                 "Vous n'avez pas le droit d'utiliser cette commande.",
