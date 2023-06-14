@@ -81,9 +81,8 @@ class Forum:
 
     def save_data(self, key, value):
         self.data[key] = value
-
-        with open(self.data_filename, "w") as data_file:
-            json.dump(self.data, data_file, indent=4)
+        with open(self.data_filename, "w", encoding="utf-8") as data_file:
+            json.dump(self.data, data_file, ensure_ascii=False, indent=4)
 
     def get_data(self, key):
         return self.data[key] if key in self.data.keys() else None
