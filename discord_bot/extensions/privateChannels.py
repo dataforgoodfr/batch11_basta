@@ -66,6 +66,7 @@ class privateChannels(commands.Cog):
 
         def __init__(self, day: int):
             super().__init__(timeout=None)
+            self.add_item(self.ConfirmButton(label="Confirmer le partage", style=discord.ButtonStyle.primary, day=day))
             self.day = day
 
         @staticmethod
@@ -80,31 +81,36 @@ class privateChannels(commands.Cog):
                             break
             message_list.reverse()
             return message_list
-
-        @discord.ui.button(label="Confirmer le partage", style=discord.ButtonStyle.primary, custom_id="100")
-        async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
-
-            # SLOW MODE - Pour prévenir le spam dans le canal des réponses anonymes 
-            if interaction.user.id in self.slow_mode.keys() and time.time() <= self.slow_mode[interaction.user.id]:
-                await interaction.response.send_message("Tu ne peux faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
-                return
+        
+        class ConfirmButton(discord.ui.Button):
+            def __init__(self, label, style, day):
+                self.day = day
+                custom_id=str(100 - day)
+                super().__init__(label=label, style=style, custom_id=custom_id)
             
-            message_list = await self.get_messages(interaction.user, interaction.channel.history(limit=100))
+            async def callback(self, interaction: discord.Interaction):
+                # SLOW MODE - Pour prévenir le spam dans le canal des réponses anonymes 
+                if interaction.user.id in privateChannels.ConfirmShareButton.slow_mode.keys() and time.time() <= privateChannels.ConfirmShareButton.slow_mode[interaction.user.id]:
+                    await interaction.response.send_message("Tu ne peux faire qu'un seul partage toutes les 15 minutes. Merci de patienter avant de pouvoir faire le prochain !", delete_after=30)
+                    return
+                
+                message_list = await privateChannels.ConfirmShareButton.get_messages(interaction.user, interaction.channel.history(limit=100))
 
-            forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
-            config = forum.config
-            ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"]
-            channel = interaction.guild.get_channel(ano_answers)
+                forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
+                config = forum.config
+                ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"]
+                channel = interaction.guild.get_channel(ano_answers)
 
-            embed=discord.Embed()
-            embed.add_field(name="📢  Nouveau témoignage anonyme", value="", inline=False)
-            await channel.send(embed=embed)
-            for message in message_list:
-                await channel.send(message.content)
+                embed=discord.Embed()
+                embed.add_field(name="📢  Nouveau témoignage anonyme", value="", inline=False)
+                await channel.send(embed=embed)
+                for message in message_list:
+                    await channel.send(message.content)
 
-            await interaction.response.defer()
-            await interaction.channel.send(f"✅ Ton témoignage a été partagé, {interaction.user.mention} !", delete_after=20)
-            self.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
+                await interaction.response.defer()
+                await interaction.channel.send(f"✅ Ton témoignage a été partagé, {interaction.user.mention} !", delete_after=20)
+                privateChannels.ConfirmShareButton.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
+                
 
     class ConfirmCloseButton(discord.ui.View):
         def __init__(self):
@@ -226,4 +232,6 @@ async def setup(bot) -> None:
     bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
     bot.add_view(privateChannels.ShareButtons(bot=bot)) # Persistance des boutons de partage des jours
     # bot.add_view(privateChannels.ConfirmShareButton(day=0)) # LA DESACTIVATION EST VOLONTAIRE, voir issue #39
+    for i in range(5):
+        bot.add_view(privateChannels.ConfirmShareButton(day=i))
     bot.add_view(privateChannels.ConfirmCloseButton())
