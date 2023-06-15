@@ -223,6 +223,20 @@ class ForumManager(commands.Cog):
         forum = self.get_forum(ctx.guild.id)
         await PollModule.fetch_polls(forum)
 
+    @commands.hybrid_command(
+        name="send", description="Envoi le message en paramètre"
+    )
+    async def send(self, ctx, message):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
+        channel = ctx.channel
+        await channel.send(message)
+
 
 async def setup(bot) -> None:
     manager = ForumManager(bot)
