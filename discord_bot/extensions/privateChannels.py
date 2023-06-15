@@ -177,7 +177,7 @@ class privateChannels(commands.Cog):
             return
         
         config = forum.config
-        admin = config["PRIVATE_CHANNELS"]["ADMIN_ROLE_ID"]
+        admin = guild.get_role(config["PRIVATE_CHANNELS"]["ADMIN_ROLE_ID"])
 
         overwrites = {
             guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -191,7 +191,7 @@ class privateChannels(commands.Cog):
         # Jour actuel
         current_day = config["GENERAL"]["CURRENT_DAY"]
 
-        channel = await interaction.channel.category.create_text_channel("canal privé "+"{:04d}".format(data["counter"]), overwrites=overwrites)
+        channel = await interaction.channel.category.create_text_channel(name="canal privé "+"{:04d}".format(data["counter"]), overwrites=overwrites)
         await channel.send(embed=privateChannels.embed_welcome(), view=privateChannels.ShareButtons(bot=interaction.client, current_day=current_day))
         await channel.send(f"✅ Ton canal personnel a été créé {interaction.user.mention} !", delete_after=20)
 
