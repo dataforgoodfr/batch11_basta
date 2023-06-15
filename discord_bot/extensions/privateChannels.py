@@ -96,6 +96,10 @@ class privateChannels(commands.Cog):
                 
                 message_list = await privateChannels.ConfirmShareButton.get_messages(interaction.user, interaction.channel.history(limit=100))
 
+                if len(message_list) == 0:
+                    await interaction.response.send_message("Tu n'as pas sélectionné de message !", delete_after=15)
+                    return
+
                 forum = interaction.client.get_cog("ForumManager").get_forum(interaction.guild.id)
                 config = forum.config
                 ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"]
@@ -110,7 +114,7 @@ class privateChannels(commands.Cog):
                 await interaction.response.defer()
                 await interaction.channel.send(f"✅ Ton témoignage a été partagé, {interaction.user.mention} !", delete_after=20)
                 privateChannels.ConfirmShareButton.slow_mode[interaction.user.id] = time.time() + config["PRIVATE_CHANNELS"]["SHARING_COOLDOWN"]
-                
+
 
     class ConfirmCloseButton(discord.ui.View):
         def __init__(self):
