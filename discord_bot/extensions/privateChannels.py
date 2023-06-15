@@ -96,6 +96,9 @@ class privateChannels(commands.Cog):
             ano_answers = config["GENERAL"]["CHANNELS"]["DAYS"][self.day]["ANO_ANSWERS"]
             channel = interaction.guild.get_channel(ano_answers)
 
+            embed=discord.Embed()
+            embed.add_field(name="📢  Nouveau témoignage anonyme", value="", inline=False)
+            await channel.send(embed=embed)
             for message in message_list:
                 await channel.send(message.content)
 
@@ -124,7 +127,7 @@ class privateChannels(commands.Cog):
                 # Les boutons correspondant à des jours non ouverts sont désactivés.
             
             async def callback(self, interaction: discord.Interaction):
-                await interaction.channel.send(embed=privateChannels.embed_share(int(self.custom_id)-1), view=privateChannels.ConfirmShareButton(day=int(self.custom_id)-2))
+                await interaction.channel.send(embed=privateChannels.embed_share(int(self.custom_id)-1), view=privateChannels.ConfirmShareButton(day=int(self.custom_id)-2), delete_after=900)
                 await interaction.response.defer()
 
         class RefreshButton(discord.ui.Button):
@@ -222,5 +225,5 @@ async def setup(bot) -> None:
     await bot.add_cog(privateChannels(bot))
     bot.add_view(privateChannels.PrivateChannelButton()) # Persistance du bouton "Créer un canal privé"
     bot.add_view(privateChannels.ShareButtons(bot=bot)) # Persistance des boutons de partage des jours
-    bot.add_view(privateChannels.ConfirmShareButton(day=0))
+    # bot.add_view(privateChannels.ConfirmShareButton(day=0)) # LA DESACTIVATION EST VOLONTAIRE, voir issue #39
     bot.add_view(privateChannels.ConfirmCloseButton())
