@@ -6,7 +6,7 @@
             "ping": true
         },
         {
-            "message": "Ton expérience d’étudiante est-elle ce à quoi tu t’attendais ?\n\nGlobalement, quelle note sur 10 donnerais-tu à ton expérience d’étudiante ?\n\nTrouves-tu qu’il y a des groupes qui sont moins intégrés / moins écoutés / moins respectés  dans ton école ? Si oui, lesquels ?",
+            "message": "Ton expérience d’étudiante est-elle ce à quoi tu t’attendais ?",
             "polls": [
                 {
                     "question": "Globalement, quelle note sur 10 donnerais-tu à ton expérience d’étudiante ?",
@@ -50,7 +50,7 @@
     ],
     [
         {
-            "message": "**41% des femmes entre 15 et 24 ans déclarent avoir été moins bien traitées en raison de leur sexe durant leurs études (rapport annuel 2023 sur l’état des lieux du sexisme en France).\nCe chiffre te surprend-il ?\nPersonnellement, as-tu constaté des différences de traitement entre les femmes et les hommes dans ton école ? Est-ce plus ou moins prononcé selon la spécialisation choisie ?**",
+            "message": "**Bonjour à toutes, j'espère que vous allez bien !\n\n41% des femmes entre 15 et 24 ans déclarent avoir été moins bien traitées en raison de leur sexe durant leurs études (rapport annuel 2023 sur l’état des lieux du sexisme en France).\nCe chiffre te surprend-il ?\nPersonnellement, as-tu constaté des différences de traitement entre les femmes et les hommes dans ton école ? Est-ce plus ou moins prononcé selon la spécialisation choisie ?**",
             "polls": [],
             "ping": true
         },
@@ -60,8 +60,19 @@
             "ping": false
         },
         {
-            "message": "**As-tu des exemples, observés ou vécus, de blagues sexistes ou de moqueries ?\nAs-tu déjà été témoin ou victime de comportements machistes ? ou de comportements qui  s’apparentent à du paternalisme ?\nÇa provenait d’autres étudiants ?  Du corps professoral ?  Du personnel administratif ?**",
-            "polls": [],
+            "message": "**As-tu des exemples, observés ou vécus, de blagues sexistes ou de moqueries ?\nAs-tu déjà été témoin ou victime de comportements machistes ? ou de comportements qui  s’apparentent à du paternalisme ?**",
+            "polls": [
+                {
+                    "question": "As-tu déjà été victime de comportements machistes ? Si oui, venant de quelle(s) personne(s) ?",
+                    "options": [
+                        "D’autres étudiants",
+                        "Du corps professoral",
+                        "Du personnel administratif",
+                        "Je n'ai pas été vitime de comportements machistes"
+                    ],
+                    "multivote": true
+                }
+            ],
             "ping": true
         },
         {
@@ -82,13 +93,22 @@
     ],
     [
         {
-            "message": "**__Avertissement: nous aborderons des sujets difficiles aujourd’hui, comme les atteintes à l’intégrité physique. Pour celles qui ne voudraient pas du tout participer à la discussion, il est recommandé de se reconnecter demain. Pour les autres, l’objectif est de créer un espace de confiance. L’équipe de modération sera là pour y veiller avec votre aide.__\n\nDans le cadre de tes études universitaires, as-tu déjà été la cible de propos, sous-entendus ou attitudes à caractère sexuel qui t’ont mise mal à l’aise ?\nAs-tu été l’objet de propositions sexuelles insistantes ?\nSi oui, penses-tu que ça pourrait se reproduire ? Si non, penses-tu que ça pourrait arriver dans le cadre de ta scolarité ?**",
+            "message": "**Hello à toutes !\n\n__Avertissement: nous aborderons des sujets difficiles aujourd’hui, comme les atteintes à l’intégrité physique. Pour celles qui ne voudraient pas du tout participer à la discussion, il est recommandé de se reconnecter demain. Pour les autres, l’objectif est de créer un espace de confiance. L’équipe de modération sera là pour y veiller avec votre aide.__\n\nDans le cadre de tes études universitaires, as-tu déjà été la cible de propos, sous-entendus ou attitudes à caractère sexuel qui t’ont mise mal à l’aise ?\nAs-tu été l’objet de propositions sexuelles insistantes ?\nSi oui, penses-tu que ça pourrait se reproduire ? Si non, penses-tu que ça pourrait arriver dans le cadre de ta scolarité ?**",
             "polls": [],
             "ping": true
         },
         {
-            "message": "Quel est le sentiment qui prédomine dans ces cas-là ? La colère ? Le fatalisme ? Une forme de honte ?\nÀ ta connaissance, y a-t-il des choses trash comme des photos détournées, des images ou vidéos porno qui circulent sur les réseaux sociaux ou dans certaines boucles de discussion ? L'une de vous a-t-elle déjà eu affaire à un exhibitionniste ou à un voyeur ?\nDirais-tu que tu as fait l’objet de harcèlement ou de chantage dans le cadre de ta vie d’étudiante ? Si oui, de quelle nature ? As-tu vu ou entendu parler de ce genre de problème dans l’école ? Est-ce récurrent ?",
-            "polls": [],
+            "message": "Quel est le sentiment qui prédomine dans ces cas-là ? La colère ? Le fatalisme ? Une forme de honte ?\nÀ ta connaissance, y a-t-il des choses trash comme des photos détournées, des images ou vidéos porno qui circulent sur les réseaux sociaux ou dans certaines boucles de discussion ? L'une de vous a-t-elle déjà eu affaire à un exhibitionniste ou à un voyeur ?\nDirais-tu que tu as fait l’objet de harcèlement ou de chantage dans le cadre de ta vie d’étudiante ? Si oui, de quelle nature ?",
+            "polls": [
+                {
+                    "question": "As-tu vu ou entendu parler de ce genre de problème dans l’école ?",
+                    "options": [
+                        "oui",
+                        "non"
+                    ],
+                    "multivote": false
+                }
+            ],
             "ping": false
         },
         {
@@ -114,7 +134,7 @@
     ],
     [
         {
-            "message": "**Selon le dernier rapport sur le sexisme en France, seulement 6% de l’ensemble de la population fait totalement confiance aux écoles et universités pour prévenir et lutter contre les actes et violences sexistes… et toi ? \nConnais-tu les dispositifs de lutte contre les violences sexistes et sexuelles (VSS) mis en place par l’établissement ?**",
+            "message": "**Salut à toutes !\nSelon le dernier rapport sur le sexisme en France, seulement 6% de l’ensemble de la population fait totalement confiance aux écoles et universités pour prévenir et lutter contre les actes et violences sexistes… et toi ? \nConnais-tu les dispositifs de lutte contre les violences sexistes et sexuelles (VSS) mis en place par ton établissement ?**",
             "polls": [],
             "ping": true
         },
@@ -129,13 +149,24 @@
             "ping": true
         },
         {
-            "message": "Quels sont à tes yeux les obstacles aux procédures de signalement de violences auprès de l’établissement ? Sont-elles connues et adaptées quand on est témoin d’actes de violence ? Que changerais-tu si tu le pouvais ? \nQui sont les mieux placées pour améliorer la situation ? Les personnes de l’administration ? Des associations de ton école ?  Des personnes externes ? Lesquelles ?",
+            "message": "Quels sont à tes yeux les obstacles aux procédures de signalement de violences auprès des établissements ? Sont-elles connues et adaptées quand on est témoin d’actes de violence ? Que changerais-tu si tu le pouvais ? \nQui sont les mieux placées pour améliorer la situation ? Les personnes de l’administration ? Des associations de ton école ?  Des personnes externes ? Lesquelles ?",
             "polls": [],
             "ping": false
         },
         {
-            "message": "**Penses-tu que ton école est en avance ou en retard dans la lutte contre les VSS ? Pourquoi ?\nSi tu avais un message à faire passer à la direction, quel en serait le contenu ?**",
-            "polls": [],
+            "message": "**Si tu avais un message à faire passer à la direction de ton école, quel en serait le contenu ?**",
+            "polls": [
+                {
+                    "question": "Comment tu situes ton école dans la lutte contre les VSS ?",
+                    "options": [
+                        "En avance",
+                        "Au même niveau",
+                        "En retard",
+                        "Ne sais pas"
+                    ],
+                    "multivote": false
+                }
+            ],
             "ping": true
         },
         {
@@ -146,12 +177,12 @@
     ],
     [
         {
-            "message": "**Il est temps de faire un peu le bilan. Que retiens-tu des derniers jours ? **",
+            "message": "**Bonjour à toutes, c'est déjà le 5ème jour et il est temps de faire un peu le bilan.\nQue retiens-tu des derniers jours ? **",
             "polls": [],
             "ping": true
         },
         {
-            "message": "As-tu trouvé nos échanges intéressants ? Utiles ?",
+            "message": "As-tu trouvé nos échanges intéressants ? Utiles ?\n\nC’est aussi l’occasion d’adresser un message aux étudiants-hommes. Qu’as-tu envie de leur dire ?",
             "polls": [],
             "ping": false
         },
@@ -161,10 +192,10 @@
             "ping": true
         },
         {
-            "message": "Quelle note sur 10 donnerais-tu à l’école sur le plan de l’égalité femmes / hommes ? Merci de préciser un peu les critères sur lesquels se base ta note, qu’elle soit positive ou négative.\n\nC’est aussi l’occasion d’adresser un message aux étudiants-hommes. Qu’as-tu envie de leur dire ?",
+            "message": "",
             "polls": [
                 {
-                    "question": "Quelle note sur 10 donnerais-tu à l’école sur le plan de l’égalité femmes / hommes ?",
+                    "question": "Quelle note sur 10 donnerais-tu à ton école sur le plan de l’égalité femmes / hommes ?",
                     "options": [
                         "1",
                         "2",
@@ -183,25 +214,15 @@
             "ping": false
         },
         {
-            "message": "**En conclusion, as-tu eu l'occasion de t'exprimer comme tu le souhaitais dans le cadre de ce forum ? Est-ce que tu t'es sentie à l'aise et en sécurité lors des échanges ? **",
+            "message": "**En conclusion, as-tu eu l'occasion de t'exprimer comme tu le souhaitais dans le cadre de ce forum ?**",
             "polls": [
-                {
-                    "question": "As-tu eu l'occasion de t'exprimer comme tu le souhaitais dans le cadre de ce forum ?",
-                    "options": [
-                        "Pas vraiment",
-                        "Oui, un peu",
-                        "Oui, tout à fait",
-                        "Totalement"
-                    ],
-                    "multivote": false
-                },
                 {
                     "question": "Est-ce que tu t'es sentie à l'aise et en sécurité lors des échanges ?",
                     "options": [
-                        "Pas vraiment",
-                        "Oui, un peu",
-                        "Oui, tout à fait",
-                        "Totalement"
+                        "Pas du tout",
+                        "Plutôt pas",
+                        "Plutôt oui",
+                        "Tout à fait"
                     ],
                     "multivote": false
                 }
@@ -209,7 +230,7 @@
             "ping": true
         },
         {
-            "message": "As-tu des remarques ou suggestions pour améliorer le déroulement de ce type de forum ? Certains sujets ont-ils été oubliés ? D’autres auraient-ils mérité d’être plus ou moins développés ?\nUn très grand merci d’avoir accepté de participer.\nJe poste quelques liens et informations à toutes fins utiles.\nPrenez soin de vous et tous mes vœux de succès dans votre scolarité au féminin.",
+            "message": "As-tu des remarques ou suggestions pour améliorer le déroulement de ce type de forum ? Certains sujets ont-ils été oubliés ? D’autres auraient-ils mérité d’être plus ou moins développés ?\nUn très grand merci d’avoir accepté de participer.\nPrenez soin de vous et tous mes vœux de succès dans votre scolarité au féminin.",
             "polls": [],
             "ping": false
         }

@@ -79,9 +79,11 @@ async def send_end_of_day_message(config: dict, bot):
     if channel_id == -1:
         logging.error(f"Le channel id du jour {current_day} n'est pas défini.")
     channel = bot.get_channel(channel_id)
-    await channel.send(
-        f"Fin de la journée n°{current_day+1}, merci d'avoir participé ! 👏"
-    )
+    if current_day <= 3:
+        await channel.send(
+            f"Fin de la journée n°{current_day+1}, merci d'avoir participé. \
+            Et à demain."
+        )
 
 
 async def send_end_of_forum_message(config: dict, bot):
@@ -98,7 +100,7 @@ async def send_opening_messages(channelsIds: list[int], bot) -> None:
     for channel_id in channelsIds:
         channel = bot.get_channel(channel_id)
         await channel.send(
-            "Début de journée, vous pouvez de nouveau écrire dans ce channel."
+            "Début de journée, tu peux de nouveau écrire dans ce channel."
         )
 
 
@@ -106,6 +108,6 @@ async def send_closing_messages(channelsIds: list[int], bot) -> None:
     for channel_id in channelsIds:
         channel = bot.get_channel(channel_id)
         await channel.send(
-            "Fin de journée, vous ne pouvez plus écrire \
+            "Fin de journée, tu ne peux plus écrire \
                 dans ce channel jusqu'à demain."
         )
