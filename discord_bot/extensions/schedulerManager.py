@@ -106,7 +106,7 @@ class Scheduler:
                 jour_actuel += 1
                 config["GENERAL"]["CURRENT_DAY"] = jour_actuel
             else:
-                self.end_forum()
+                await self.end_forum()
         else:
             logging.warning("Le forum n'a pas encore commencé")
 

@@ -53,11 +53,12 @@ async def send_next_message(bot, forum) -> dict:
             day_send = day_script[message_no]
             to_send_message = day_send["message"]
             to_send_polls = day_send["polls"]
-            if day_send["ping"]:
-                role_to_ping = config["ROLE_MANAGER"]["BASE_ROLE_ID"]
-                to_send_message = f"{to_send_message}\n<@&{role_to_ping}>"
             channel = bot.get_channel(channel_id)
-            await channel.send(to_send_message)
+            if to_send_message != "":
+                if day_send["ping"]:
+                    role_to_ping = config["ROLE_MANAGER"]["BASE_ROLE_ID"]
+                    to_send_message = f"{to_send_message}\n<@&{role_to_ping}>"
+                await channel.send(to_send_message)
             await PollModule.send_polls(to_send_polls, channel, forum)
 
         # Update the config
@@ -78,7 +79,9 @@ async def send_end_of_day_message(config: dict, bot):
     if channel_id == -1:
         logging.error(f"Le channel id du jour {current_day} n'est pas défini.")
     channel = bot.get_channel(channel_id)
-    await channel.send(f"Fin de la journée n°{current_day+1}")
+    await channel.send(
+        f"Fin de la journée n°{current_day+1}, merci d'avoir participé ! 👏"
+    )
 
 
 async def send_end_of_forum_message(config: dict, bot):
