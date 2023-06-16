@@ -73,6 +73,18 @@ class Scheduler:
             self.close_channels_job.change_interval(time=close_channels_time)
         self.close_channels_job.start()
 
+        # On ajoute le channel de modération dans les channels à ne pas report
+        not_log_channels = self.forum.get_data("do_not_log_channels")
+        if type(not_log_channels) is list:
+            not_log_channels.append(
+                config["MODERATION"]["MODERATION_ALERTS_CHANNEL"]
+            )
+        else:
+            not_log_channels = [
+                config["MODERATION"]["MODERATION_ALERTS_CHANNEL"]
+            ]
+        self.forum.save_data("do_not_log_channels", not_log_channels)
+
     # Envoi un message de fin de journée
     # Genère le rapport de la journée
     # Passe à la journée suivante ou fini le forum
