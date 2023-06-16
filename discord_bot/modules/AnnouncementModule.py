@@ -19,7 +19,7 @@ async def send_already_started_message(ctx, bot):
 
 async def send_start_of_forum_message(ctx, bot):
     channel = ctx.channel
-    await channel.send("Début du forum")
+    await channel.send("Lancement du forum, bienvenues à toutes !")
 
 
 # Envoye le message suivant sur le bon channel
@@ -88,16 +88,21 @@ async def send_end_of_forum_message(config: dict, bot):
     if channel_id == -1:
         logging.error(f"Le channel id du jour {current_day} n'est pas défini.")
     channel = bot.get_channel(channel_id)
-    await channel.send("Fin du forum")
+    await channel.send("Fin du forum, merci à toutes d'avoir participé !")
 
 
 async def send_opening_messages(channelsIds: list[int], bot) -> None:
     for channel_id in channelsIds:
         channel = bot.get_channel(channel_id)
-        await channel.send("Vous pouvez de nouveau écrire dans ce channel.")
+        await channel.send(
+            "Début de journée, vous pouvez de nouveau écrire dans ce channel."
+        )
 
 
 async def send_closing_messages(channelsIds: list[int], bot) -> None:
     for channel_id in channelsIds:
         channel = bot.get_channel(channel_id)
-        await channel.send("Vous ne pouvez plus écrire dans ce channel.")
+        await channel.send(
+            "Fin de journée, vous ne pouvez plus écrire \
+                dans ce channel jusqu'à demain."
+        )
