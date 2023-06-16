@@ -10,7 +10,7 @@ Le fichier est un fichier JSON qui contient un dictionnaire.
 Les clefs ne sont pas forcément définies selon si le bot a eu l'utilité de les créer ou non.
 
 Les clefs possibles sont :
-- `not_log_channels` (list[int]) : une liste des ids des TextChannels à ne pas récupérer lors de la récupération des messages pour la synthèse. Attention, les logs récupèrent TOUS les evenements et donc tous les messages sans restrictions (pour des raisons légales).
+- `do_not_log_channels` (list[int]) : une liste des ids des TextChannels à ne pas récupérer lors de la récupération des messages pour la synthèse. Attention, les logs récupèrent TOUS les evenements et donc tous les messages sans restrictions (pour des raisons légales).
 - `polls` (dict) : Un dictionnaire repertoriant tous les sondages qui ont déjà été lancés sur le serveur. Les paires sont sous la forme suivante : `{message.id: message.channel.id}`
 - `poll_results` (list[dict]) : une liste de dictionnaires qui contient les résultats de tous les sondages qui ont été générés. Cette liste est générée lorsque le bot lance la synthèse de fin de forum (ou qu'elle est provoquée via la commande `!get_polls`). Ce dictionnaire contient 4 clefs :
    - `title` : le titre du sondage 

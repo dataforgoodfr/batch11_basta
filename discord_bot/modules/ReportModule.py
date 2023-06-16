@@ -22,7 +22,7 @@ async def generate_forum_report(forum) -> None:
     channels = guild.text_channels
 
     # If there are channel we're not supposed to log, remove them
-    not_log_channels = forum.get_data("not_log_channels")
+    not_log_channels = forum.get_data("do_not_log_channels")
     if type(not_log_channels) is list:
         channels = [
             channel
