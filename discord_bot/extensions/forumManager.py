@@ -113,8 +113,8 @@ class Forum:
             await channel.set_permissions(
                 self.bot.get_guild(self.server_id).default_role,
                 send_messages=False,
-                create_public_threads=True,
-                send_messages_in_threads=True,
+                create_public_threads=False,
+                send_messages_in_threads=False,
             )
         await AnnouncementModule.send_closing_messages(channels_ids, self.bot)
 
