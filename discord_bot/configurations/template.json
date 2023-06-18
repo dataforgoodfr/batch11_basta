@@ -35,20 +35,21 @@
         "TIME_RESTRICTED_CHANNELS": [],
         "MESSAGES_HOURS": [
             7,
+            8,
             12,
-            17
+            13,
+            17,
+            18
         ]
     },
     "PRIVATE_CHANNELS": {
         "ADMIN_ROLE_ID": -1,
-        "PRIVATE_CHANNEL_ANNOUNCEMENT_CHANNEL": -1,
         "SHARING_COOLDOWN": 900
     },
     "MODERATION": {
         "MODERATION_ALERTS_CHANNEL": -1,
         "REPORT_EMOJI": null
     },
-
     "ROLE_MANAGER": {
         "RULE_MESSAGE_ID": -1,
         "BASE_ROLE_ID": -1

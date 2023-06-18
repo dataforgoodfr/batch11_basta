@@ -52,9 +52,9 @@ async def send_poll(poll: dict, channel, forum) -> int:
     for x, option in enumerate(options):
         description += "\n {} {}".format(reactions[x], option)
     if multivote:
-        question += "\nVous pouvez voter pour plusieurs options."
+        question += "\nTu peux voter pour plusieurs options."
     else:
-        question += "\nVous ne devez voter que pour une seule option."
+        question += "\nTu ne peux voter que pour une seule option."
 
     # Formatage de l'embed
     embed = discord.Embed(title=question, description="".join(description))

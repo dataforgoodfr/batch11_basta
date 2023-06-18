@@ -11,10 +11,11 @@ Ex : `script[0]` permet d'accéder au script du premier jour.
 Le second indice permet d'accéder à un envoi précis.
 Ex : `script[0][0]` permet d'accéder au premier envoi du premier jour.
 
-Un envoi est un dictionnaire contenant un message ainsi qu'un tableau représentant les sondages associés à ce message.
+Un envoi est un dictionnaire contenant un message ainsi qu'un tableau représentant les sondages associés à ce message et un champ "ping" pour savoir si on doit pinig les utilisatrices.
 Ex :
 `script[0][0]["message"] -> str` permet d'accéder au message du premier envoi du premier jour.
 `script[0][0]["polls"] -> list[dict]` permet d'accéder à la liste des sondages du premier envoi du premier jour.
+`script[0][0]["ping"] -> bool` doit-on ping les utilisatrices pour ce message ?
 
 Un sondage est représenté en dictionnaire contenant les informations suivantes :
 - `question -> str` : La question du sondage
@@ -43,11 +44,14 @@ Le deuxième message du second jour a un sondate liée à 4 choix et avec la pos
                 ],
                 "multivote": false
             }
-        ]
+        ],
+        "ping": true
     },
     {
         "message": "day0sentence1",
-        "polls": []
+        "polls": [],
+        "ping": false
+
     },
     {
         "message": "day0sentence2",
@@ -57,7 +61,8 @@ Le deuxième message du second jour a un sondate liée à 4 choix et avec la pos
 [
     {
         "message": "day1sentence0",
-        "polls": []
+        "polls": [],
+        "ping": false
     },
     {
         "message": "day1sentence1",

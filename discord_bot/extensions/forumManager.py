@@ -65,6 +65,11 @@ class Forum:
         with open(self.config_filename, "w") as config_file:
             json.dump(config, config_file, indent=4)
 
+    def reload_config(self):
+        with open(self.config_filename) as config_file:
+            config = json.load(config_file)
+        self.config = config
+
     def find_data(server_id: int) -> Tuple[dict, str]:
         data_filename = "./data/" + str(server_id) + ".json"
 
@@ -81,9 +86,8 @@ class Forum:
 
     def save_data(self, key, value):
         self.data[key] = value
-
-        with open(self.data_filename, "w") as data_file:
-            json.dump(self.data, data_file, indent=4)
+        with open(self.data_filename, "w", encoding="utf-8") as data_file:
+            json.dump(self.data, data_file, ensure_ascii=False, indent=4)
 
     def get_data(self, key):
         return self.data[key] if key in self.data.keys() else None
@@ -166,7 +170,7 @@ class ForumManager(commands.Cog):
             return
         if ctx.guild.id in self.ACTIVE_FORUMS.keys():
             forum = self.ACTIVE_FORUMS[ctx.guild.id]
-            forum.load_config()
+            forum.reload_config()
             await ctx.send("Done!", delete_after=5)
         else:
             await ctx.send(
@@ -218,6 +222,20 @@ class ForumManager(commands.Cog):
             return
         forum = self.get_forum(ctx.guild.id)
         await PollModule.fetch_polls(forum)
+
+    @commands.hybrid_command(
+        name="send", description="Envoi le message en paramètre"
+    )
+    async def send(self, ctx, message):
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.interaction.response.send_message(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                ephemeral=True,
+                delete_after=10,
+            )
+            return
+        channel = ctx.channel
+        await channel.send(message)
 
 
 async def setup(bot) -> None:
