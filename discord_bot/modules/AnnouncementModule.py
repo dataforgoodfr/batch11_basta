@@ -109,5 +109,5 @@ async def send_closing_messages(channelsIds: list[int], bot) -> None:
         channel = bot.get_channel(channel_id)
         await channel.send(
             "Fin de journée, tu ne peux plus écrire \
-                dans ce channel jusqu'à demain."
+            dans ce channel jusqu'à demain."
         )
