@@ -100,6 +100,8 @@ class Forum:
             await channel.set_permissions(
                 self.bot.get_guild(self.server_id).default_role,
                 send_messages=True,
+                create_public_threads=True,
+                send_messages_in_threads=True,
             )
         await AnnouncementModule.send_opening_messages(channels_ids, self.bot)
 
@@ -111,6 +113,8 @@ class Forum:
             await channel.set_permissions(
                 self.bot.get_guild(self.server_id).default_role,
                 send_messages=False,
+                create_public_threads=True,
+                send_messages_in_threads=True,
             )
         await AnnouncementModule.send_closing_messages(channels_ids, self.bot)
 
