@@ -49,10 +49,14 @@ class Scheduler:
         else:
             open_channels_time = [
                 datetime.now(pytz.timezone("Europe/Paris"))
-                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                .replace(
+                    hour=config["GENERAL"]["OPENING_CHANNEL_HOUR"],
+                    minute=0,
+                    second=0,
+                    microsecond=0,
+                )
                 .astimezone(pytz.utc)
                 .time()
-                for hour in config["GENERAL"]["OPENING_CHANNEL_HOUR"]
             ]
             self.open_channels_job.change_interval(time=open_channels_time)
         self.open_channels_job.start()
@@ -63,11 +67,17 @@ class Scheduler:
         else:
             messages_times = [
                 datetime.now(pytz.timezone("Europe/Paris"))
-                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                .replace(hour=8, minute=19, second=0, microsecond=0)
                 .astimezone(pytz.utc)
                 .time()
-                for hour in config["GENERAL"]["MESSAGES_HOURS"]
             ]
+            # messages_times = [
+            #     datetime.now(pytz.timezone("Europe/Paris"))
+            #     .replace(hour=hour, minute=0, second=0, microsecond=0)
+            #     .astimezone(pytz.utc)
+            #     .time()
+            #     for hour in config["GENERAL"]["MESSAGES_HOURS"]
+            # ]
             self.message_job.change_interval(time=messages_times)
         self.message_job.start()
 
@@ -77,10 +87,14 @@ class Scheduler:
         else:
             close_channels_time = [
                 datetime.now(pytz.timezone("Europe/Paris"))
-                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                .replace(
+                    hour=config["GENERAL"]["CLOSING_CHANNEL_HOUR"],
+                    minute=0,
+                    second=0,
+                    microsecond=0,
+                )
                 .astimezone(pytz.utc)
                 .time()
-                for hour in config["GENERAL"]["CLOSING_CHANNEL_HOUR"]
             ]
             self.close_channels_job.change_interval(time=close_channels_time)
         self.close_channels_job.start()
