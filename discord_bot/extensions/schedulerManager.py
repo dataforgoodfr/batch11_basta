@@ -2,17 +2,18 @@
 Cette classe ne doit être instanciée qu'une et une seule fois par objet forum
 """
 
-import datetime
 import logging
+from datetime import datetime
 
 import modules.AnnouncementModule as AnnouncementModule
 import modules.PollModule as PollModule
 import modules.ReportModule as ReportModule
+import pytz
 from discord.ext import commands, tasks
 
 __all__ = ["SchedulerManager"]
 
-UTC = datetime.timezone.utc
+france_timezone = pytz.timezone("Europe/Paris")
 
 is_accelerated = False
 
@@ -46,9 +47,13 @@ class Scheduler:
         if is_accelerated:
             self.open_channels_job.change_interval(seconds=10)
         else:
-            open_channels_time = datetime.time(
-                hour=config["GENERAL"]["OPENING_CHANNEL_HOUR"], tzinfo=UTC
-            )
+            open_channels_time = [
+                datetime.now(pytz.timezone("Europe/Paris"))
+                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                .astimezone(pytz.utc)
+                .time()
+                for hour in config["GENERAL"]["OPENING_CHANNEL_HOUR"]
+            ]
             self.open_channels_job.change_interval(time=open_channels_time)
         self.open_channels_job.start()
 
@@ -57,7 +62,10 @@ class Scheduler:
             self.message_job.change_interval(seconds=1)
         else:
             messages_times = [
-                datetime.time(hour=hour, tzinfo=UTC)
+                datetime.now(pytz.timezone("Europe/Paris"))
+                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                .astimezone(pytz.utc)
+                .time()
                 for hour in config["GENERAL"]["MESSAGES_HOURS"]
             ]
             self.message_job.change_interval(time=messages_times)
@@ -67,9 +75,13 @@ class Scheduler:
         if is_accelerated:
             self.close_channels_job.change_interval(seconds=9)
         else:
-            close_channels_time = datetime.time(
-                hour=config["GENERAL"]["CLOSING_CHANNEL_HOUR"], tzinfo=UTC
-            )
+            close_channels_time = [
+                datetime.now(pytz.timezone("Europe/Paris"))
+                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                .astimezone(pytz.utc)
+                .time()
+                for hour in config["GENERAL"]["CLOSING_CHANNEL_HOUR"]
+            ]
             self.close_channels_job.change_interval(time=close_channels_time)
         self.close_channels_job.start()
 
@@ -135,9 +147,12 @@ class Scheduler:
     # Tâches à répétition : envoi le message suivant
     @tasks.loop()
     async def message_job(self, manually=False) -> None:
+        # A l'air de ne plus être utile
+
         # Skip the first occurrence (if the job was started and on first loop)
-        if not manually and self.message_job.current_loop == 0:
-            return
+        # if not manually and self.message_job.current_loop == 0:
+        #     return
+
         # Envoie le message suivant
         config = await AnnouncementModule.send_next_message(
             self.bot, self.forum
@@ -148,17 +163,21 @@ class Scheduler:
     # Tâches à répétition : ouvre les channels
     @tasks.loop()
     async def open_channels_job(self, manually=False) -> None:
+        # A l'air de ne plus être utile
+
         # Skip the first occurrence (whent starting the forum)
-        if not manually and self.open_channels_job.current_loop == 0:
-            return
+        # if not manually and self.open_channels_job.current_loop == 0:
+        #     return
         await self.forum.open_time_limited_channels()
 
     # Tâches à répétition : passe au jour suivant et ferme les channels
     @tasks.loop()
     async def close_channels_job(self, manually=False) -> None:
+        # A l'air de ne plus être utile
+
         # Skip the first occurrence (whent starting the forum)
-        if not manually and self.close_channels_job.current_loop == 0:
-            return
+        # if not manually and self.close_channels_job.current_loop == 0:
+        #     return
         await self.next_day()
         await self.forum.close_time_limited_channels()
 
@@ -267,6 +286,18 @@ class SchedulerManager(commands.Cog):
     async def end_forum(self, ctx: commands.Context):
         if ctx.author.guild_permissions.administrator:
             await self.get_forum(ctx.guild.id).scheduler.end_forum()
+        else:
+            await ctx.reply(
+                "Vous n'avez pas le droit d'utiliser cette commande.",
+                delete_after=10,
+            )
+
+    @commands.hybrid_command(name="print_time")
+    async def print_time(self, ctx: commands.Context):
+        if ctx.author.guild_permissions.administrator:
+            franceTimezone = pytz.timezone("Europe/Paris")
+            now = datetime.now(franceTimezone)
+            await ctx.reply(now.strftime("%H:%M:%S"))
         else:
             await ctx.reply(
                 "Vous n'avez pas le droit d'utiliser cette commande.",
