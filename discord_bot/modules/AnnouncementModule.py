@@ -14,7 +14,7 @@ with open("script/script.json", encoding="utf-8") as script_file:
 
 
 async def send_already_started_message(ctx, bot):
-    await ctx.channel.send("Le forum a déjà commencé !")
+    await ctx.channel.send("Reprise du forum !")
 
 
 async def send_start_of_forum_message(ctx, bot):
