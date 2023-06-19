@@ -81,8 +81,8 @@ async def send_end_of_day_message(config: dict, bot):
     channel = bot.get_channel(channel_id)
     if current_day <= 3:
         await channel.send(
-            f"Fin de la journée n°{current_day+1}, merci d'avoir participé. \
-            Et à demain."
+            f"Fin de la journée n°{current_day+1}, merci d'avoir participé \
+et à demain."
         )
 
 
@@ -109,5 +109,5 @@ async def send_closing_messages(channelsIds: list[int], bot) -> None:
         channel = bot.get_channel(channel_id)
         await channel.send(
             "Fin de journée, tu ne peux plus écrire \
-            dans ce channel jusqu'à demain."
+dans ce channel jusqu'à demain."
         )
