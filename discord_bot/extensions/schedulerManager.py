@@ -32,14 +32,13 @@ class Scheduler:
             await AnnouncementModule.send_already_started_message(
                 ctx, self.bot
             )
-            return
+        else:
+            # Commence le premier jour
+            config = self.forum.config
+            config["GENERAL"]["CURRENT_DAY"] = 0
 
-        # Commence le premier jour
-        config = self.forum.config
-        config["GENERAL"]["CURRENT_DAY"] = 0
-
-        # Envoie un message de démarage
-        await AnnouncementModule.send_start_of_forum_message(ctx, self.bot)
+            # Envoie un message de démarage
+            await AnnouncementModule.send_start_of_forum_message(ctx, self.bot)
 
         # Lance les tâches à répétition :
 
