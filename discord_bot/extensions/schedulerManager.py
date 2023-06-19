@@ -67,17 +67,11 @@ class Scheduler:
         else:
             messages_times = [
                 datetime.now(pytz.timezone("Europe/Paris"))
-                .replace(hour=8, minute=19, second=0, microsecond=0)
+                .replace(hour=hour, minute=0, second=0, microsecond=0)
                 .astimezone(pytz.utc)
                 .time()
+                for hour in config["GENERAL"]["MESSAGES_HOURS"]
             ]
-            # messages_times = [
-            #     datetime.now(pytz.timezone("Europe/Paris"))
-            #     .replace(hour=hour, minute=0, second=0, microsecond=0)
-            #     .astimezone(pytz.utc)
-            #     .time()
-            #     for hour in config["GENERAL"]["MESSAGES_HOURS"]
-            # ]
             self.message_job.change_interval(time=messages_times)
         self.message_job.start()
 
