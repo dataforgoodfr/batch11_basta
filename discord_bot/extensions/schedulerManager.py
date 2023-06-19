@@ -13,8 +13,6 @@ from discord.ext import commands, tasks
 
 __all__ = ["SchedulerManager"]
 
-france_timezone = pytz.timezone("Europe/Paris")
-
 is_accelerated = False
 
 
@@ -27,6 +25,7 @@ class Scheduler:
     # Annonce le premier jour
     # Lance les tâches à répétition (ouverture, messages, fermeture)
     async def start_forum(self, ctx) -> None:
+        config = self.forum.config
         # Si forum déjà lancé, on renvoi un message d'erreur
         if self.forum.config["GENERAL"]["CURRENT_DAY"] != -1:
             await AnnouncementModule.send_already_started_message(
@@ -34,7 +33,6 @@ class Scheduler:
             )
         else:
             # Commence le premier jour
-            config = self.forum.config
             config["GENERAL"]["CURRENT_DAY"] = 0
 
             # Envoie un message de démarage
@@ -47,7 +45,7 @@ class Scheduler:
             self.open_channels_job.change_interval(seconds=10)
         else:
             open_channels_time = [
-                datetime.now(pytz.timezone("Europe/Paris"))
+                datetime.now()
                 .replace(
                     hour=config["GENERAL"]["OPENING_CHANNEL_HOUR"],
                     minute=0,
@@ -65,8 +63,8 @@ class Scheduler:
             self.message_job.change_interval(seconds=1)
         else:
             messages_times = [
-                datetime.now(pytz.timezone("Europe/Paris"))
-                .replace(hour=hour, minute=0, second=0, microsecond=0)
+                datetime.now()
+                .replace(hour=hour, minute=0, second=0)
                 .astimezone(pytz.utc)
                 .time()
                 for hour in config["GENERAL"]["MESSAGES_HOURS"]
@@ -79,7 +77,7 @@ class Scheduler:
             self.close_channels_job.change_interval(seconds=9)
         else:
             close_channels_time = [
-                datetime.now(pytz.timezone("Europe/Paris"))
+                datetime.now()
                 .replace(
                     hour=config["GENERAL"]["CLOSING_CHANNEL_HOUR"],
                     minute=0,
@@ -293,18 +291,6 @@ class SchedulerManager(commands.Cog):
     async def end_forum(self, ctx: commands.Context):
         if ctx.author.guild_permissions.administrator:
             await self.get_forum(ctx.guild.id).scheduler.end_forum()
-        else:
-            await ctx.reply(
-                "Vous n'avez pas le droit d'utiliser cette commande.",
-                delete_after=10,
-            )
-
-    @commands.hybrid_command(name="print_time")
-    async def print_time(self, ctx: commands.Context):
-        if ctx.author.guild_permissions.administrator:
-            franceTimezone = pytz.timezone("Europe/Paris")
-            now = datetime.now(franceTimezone)
-            await ctx.reply(now.strftime("%H:%M:%S"))
         else:
             await ctx.reply(
                 "Vous n'avez pas le droit d'utiliser cette commande.",
